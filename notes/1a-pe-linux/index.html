@@ -123,7 +123,10 @@ The Kernel is a translator.</br></br>
 Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; uname -a</span></span></span></code></div>
 command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
 
-TODO
+Seems like the kernel version is 2.6.35. which might be vulnerable to something as this version is pretty old.</br>
+Running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
+we can see that the suggester has several suggestions for us.</br>
+An interesting suggestion is dirtycow. Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version. 
 
 <h3 id="useful-references">Useful references</h3>
 <ul>
