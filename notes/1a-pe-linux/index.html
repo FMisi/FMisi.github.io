@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Notes - Information Gathering // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Notes - Information Gathering"/>
+<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
+
+    <meta property="og:title" content="Notes - Information Gathering" />
+<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p>
+	  <!--a style="font-size: smaller;" href="/magyar/index.html">Switch to Hungarian</a--></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">Notes - Linux Privilege Escalation</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 12, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+	<h1 id="init-linux-pe">Initial Enumeration Commands for Linux PE</h1>
+</code></pre><h3 id="init-linux-pe">System Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; whoami</span>
+</span></span><span style="display:flex;"><span>&gt; id</span>
+</span></span><span style="display:flex;"><span>&gt; w</span>
+</span></span><span style="display:flex;"><span>&gt; groups</span>
+</span></span><span style="display:flex;"><span>&gt; sudo -l</span>
+</span></span><span style="display:flex;"><span>&gt; hostname</span>
+</span></span><span style="display:flex;"><span>&gt; uname -a</span>
+</span></span><span style="display:flex;"><span>&gt; cat /proc/version</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/issue</span>
+</span></span><span style="display:flex;"><span>&gt; lscpu</span>
+</span></span><span style="display:flex;"><span>&gt; ps aux</span>
+</span></span><span style="display:flex;"><span>&gt; ps aux | grep root</span>
+</code></div>
+
+It is important to note that there are User Enumeration commands among <s>us</s> the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
+
+</code></pre><h3 id="init-linux-pe">User Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; cat /etc/passwd</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/passwd | cut -d : -f 1</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/shadow</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/group</span>
+</span></span><span style="display:flex;"><span>&gt; history</span>
+</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+</code></div>
+
+</code></pre><h3 id="init-linux-pe">Network Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ifconfig</span>
+</span></span><span style="display:flex;"><span>&gt; route</span>
+</span></span><span style="display:flex;"><span>&gt; ip route</span>
+</span></span><span style="display:flex;"><span>&gt; arp -a</span>
+</span></span><span style="display:flex;"><span>&gt; ip neigh</span>
+</span></span><span style="display:flex;"><span>&gt; netstat -ano</span>
+</code></div>
+
+</code></pre><h3 id="init-linux-pe">Password Hunting</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</span>
+</span></span><span style="display:flex;"><span>&gt; locate password | more</span>
+</span></span><span style="display:flex;"><span>&gt; locate pass | more</span>
+</span></span><span style="display:flex;"><span>&gt; locate passwd | more</span>
+</span></span><span style="display:flex;"><span>&gt; history</span>
+</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+</code></div>
+</code>
+In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
+I would like to highlight that there are several other escalation paths. The escalation paths are:</br>
+kernel exploits, passwords and file permissions, sudo, SUID, capabilities, scheduled tasks, NFS root squashing,
+and docker.
+</pre><h3 id="kernel-exp">Kernel Exploits</h3>
+What is a Kernel?</br>
+The Kernel is a computer program that controls everything in the system.</br>
+The Kernel helps interactions between hardware and software components.</br>
+The Kernel is a translator.</br></br>
+Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; uname -a</span></span></span></code></div>
+command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
+
+TODO
+
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li><a href="https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh">LinEnum.sh</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS">LinPEAS</a></li>
+<li><a href="https://github.com/mzet-/linux-exploit-suggester">Linux Exploit Suggester</a></li>
+<li><a href="https://github.com/firefart/dirtycow">DirtyCow</a></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
