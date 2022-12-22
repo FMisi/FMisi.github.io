@@ -82,7 +82,7 @@
 </span></span><span style="display:flex;"><span>&gt; ps aux | grep root</span>
 </code></div>
 
-It is important to note that there are User Enumeration commands among <s>us</s> the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
+It is important to note that there are User Enumeration commands among the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
 
 </code></pre><h3 id="init-linux-pe">User Enumeration</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; cat /etc/passwd</span>
@@ -136,10 +136,13 @@ we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It
 If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; passwd</span></span></span></code></div>
 command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
 <img src="../screen2.png" height="100%" width="100%"></br>
-<h3 id="kernel-exp">Sudo</h3>
-Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among the Useful References.</br></br>
+<h3 id="sudo-exp">Sudo</h3>
+Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among <s>us</s> the Useful References.</br>
+<h3 id="additional">Additional Tip</h3>
+It is worth researching how to escalate privileges based on the output of the above initial enumeration commands.</br>
+That's how I found the PE with sudo wget for the first time.
+</br></br>
 ~Thank you for reading~
-
 <h3 id="useful-references">Useful references</h3>
 <ul>
 <li><a href="https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh">LinEnum.sh</a></li>

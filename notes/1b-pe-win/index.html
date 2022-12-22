@@ -47,7 +47,7 @@
       <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
       <script src="/js/crypto-js.min.js"></script>
       <script src="/js/dice.js"></script>
-      <h1 class ="post-title">Notes - Linux Privilege Escalation</h1>
+      <h1 class ="post-title">Notes - Windows Privilege Escalation</h1>
       <div class="post-meta">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
@@ -66,87 +66,72 @@
       </div>
     </header>
     <div class="post-content">
-	<h1 id="init-linux-pe">Initial Enumeration Commands for Linux PE</h1>
+	<h1 id="init-linux-pe">Initial Enumeration Commands for Windows PE</h1>
 </code></pre><h3 id="init-linux-pe">System Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; whoami</span>
-</span></span><span style="display:flex;"><span>&gt; id</span>
-</span></span><span style="display:flex;"><span>&gt; w</span>
-</span></span><span style="display:flex;"><span>&gt; groups</span>
-</span></span><span style="display:flex;"><span>&gt; sudo -l</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; systeminfo</span>
+</span></span><span style="display:flex;"><span>&gt; systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"</span>
+</span></span><span style="display:flex;"><span>&gt; whoami</span>
 </span></span><span style="display:flex;"><span>&gt; hostname</span>
-</span></span><span style="display:flex;"><span>&gt; uname -a</span>
-</span></span><span style="display:flex;"><span>&gt; cat /proc/version</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/issue</span>
-</span></span><span style="display:flex;"><span>&gt; lscpu</span>
-</span></span><span style="display:flex;"><span>&gt; ps aux</span>
-</span></span><span style="display:flex;"><span>&gt; ps aux | grep root</span>
+</span></span><span style="display:flex;"><span>&gt; wmic qfe</span>
+</span></span><span style="display:flex;"><span>&gt; wmic qfe get Caption,Description,HotFixID,InstalledOn</span>
+</span></span><span style="display:flex;"><span>&gt; wmic logicaldisk</span>
+</span></span><span style="display:flex;"><span>&gt; wmic logicaldisk get caption,description,providername</span>
 </code></div>
 
-It is important to note that there are User Enumeration commands among <s>us</s> the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
+It is important to note that there is a User Enumeration command among the System Enumeration commands, because getting to know the output of whoami is almost always more important than getting to know the output of wmic logicaldisk.
 
 </code></pre><h3 id="init-linux-pe">User Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; cat /etc/passwd</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/passwd | cut -d : -f 1</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/shadow</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/group</span>
-</span></span><span style="display:flex;"><span>&gt; history</span>
-</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; whoami /priv</span>
+</span></span><span style="display:flex;"><span>&gt; whoami /groups</span>
+</span></span><span style="display:flex;"><span>&gt; net user</span>
+</span></span><span style="display:flex;"><span>&gt; net user *USER*</span>
+</span></span><span style="display:flex;"><span>&gt; net user administrator</span>
+</span></span><span style="display:flex;"><span>&gt; net localgroup</span>
+</span></span><span style="display:flex;"><span>&gt; net localgroup administrators</span>
 </code></div>
 
 </code></pre><h3 id="init-linux-pe">Network Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ifconfig</span>
-</span></span><span style="display:flex;"><span>&gt; route</span>
-</span></span><span style="display:flex;"><span>&gt; ip route</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; ipconfig</span>
+</span></span><span style="display:flex;"><span>&gt; ipconfig /all</span>
 </span></span><span style="display:flex;"><span>&gt; arp -a</span>
-</span></span><span style="display:flex;"><span>&gt; ip neigh</span>
+</span></span><span style="display:flex;"><span>&gt; route print</span>
 </span></span><span style="display:flex;"><span>&gt; netstat -ano</span>
 </code></div>
 
 </code></pre><h3 id="init-linux-pe">Password Hunting</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</span>
-</span></span><span style="display:flex;"><span>&gt; locate password | more</span>
-</span></span><span style="display:flex;"><span>&gt; locate pass | more</span>
-</span></span><span style="display:flex;"><span>&gt; locate passwd | more</span>
-</span></span><span style="display:flex;"><span>&gt; history</span>
-</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; findstr /si password *.config *.ini *.txt *.xml</span>
+</span></span><span style="display:flex;"><span>&gt; reg query "HKCU\Software\ORL\WinVNC3\Password"</span>
+</span></span><span style="display:flex;"><span>&gt; reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"</span>
+</span></span><span style="display:flex;"><span>&gt; reg query "HKLM\SYSTEM\Current\Controlset\Services\SNMP"</span>
 </code></div>
 </code>
-In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
+
+</code></pre><h3 id="init-linux-pe">AV and Firewall Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; sc query windefend</span>
+</span></span><span style="display:flex;"><span>&gt; sc queryex type= service</span>
+</span></span><span style="display:flex;"><span>&gt; netsh advfirewall firewall dump</span>
+</span></span><span style="display:flex;"><span>&gt; netsh firewall show state</span>
+</span></span><span style="display:flex;"><span>&gt; netsh firewall show config</span>
+</code></div>
+</code>
+
+In this entry we will see how to escalate privileges via kernel expoits.
 I would like to highlight that there are several other escalation paths. The escalation paths are:</br>
-Kernel Exploits, Passwords and File Permissions, Sudo, SUID, Capabilities, Scheduled Tasks, NFS Root Squashing,
-and Docker.
+TODO
 </pre><h3 id="kernel-exp">Kernel Exploits</h3>
 What is a Kernel?</br>
 The Kernel is a computer program that controls everything in the system.</br>
 The Kernel helps interactions between hardware and software components.</br>
 The Kernel is a translator.</br></br>
-Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; uname -a</span></span></span></code></div>
-command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
 
-Seems like the kernel version is 2.6.35. which might be vulnerable to something as this version is pretty old.</br>
-Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
-we can see that the suggester has several suggestions for us.</br>
-An interesting suggestion is dirtycow.</br></br>
-<img src="../screen1.png" height="100%" width="100%"></br></br>
-Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version.</br>
-Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; gcc -pthread c0w.c -o cow</span></span></span></code></div>
-we can compile the DirtyCow C program (if gcc is installed).</br>
-Running the program with the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./cow</span></span></span></code></div>
-we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It's backed up because DirtyCow modified these files so we can use them to escalate our privileges.</br>
-If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; passwd</span></span></span></code></div>
-command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
-<img src="../screen2.png" height="100%" width="100%"></br>
-<h3 id="kernel-exp">Sudo</h3>
-Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among the Useful References.</br></br>
+TODO
+</br></br>
 ~Thank you for reading~
 
 <h3 id="useful-references">Useful references</h3>
 <ul>
-<li><a href="https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh">LinEnum.sh</a></li>
-<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS">LinPEAS</a></li>
-<li><a href="https://github.com/mzet-/linux-exploit-suggester">Linux Exploit Suggester</a></li>
-<li><a href="https://github.com/firefart/dirtycow">DirtyCow</a></li>
-<li><a href="https://vk9-sec.com/wget-privilege-escalation/">PE with sudo wget</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS">WinPEAS</a></li>
+<li><a href="https://github.com/AonCyberLabs/Windows-Exploit-Suggester">Windows Exploit Suggester</a></li>
 
 </ul>
 
