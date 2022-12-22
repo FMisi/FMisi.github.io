@@ -113,8 +113,8 @@ It is important to note that there are User Enumeration commands among <s>us</s>
 </code>
 In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
 I would like to highlight that there are several other escalation paths. The escalation paths are:</br>
-kernel exploits, passwords and file permissions, sudo, SUID, capabilities, scheduled tasks, NFS root squashing,
-and docker.
+Kernel Exploits, Passwords and File Permissions, Sudo, SUID, Capabilities, Scheduled Tasks, NFS Root Squashing,
+and Docker.
 </pre><h3 id="kernel-exp">Kernel Exploits</h3>
 What is a Kernel?</br>
 The Kernel is a computer program that controls everything in the system.</br>
@@ -124,9 +124,21 @@ Let's say we are running the <div class="highlight"><pre tabindex="0" style="col
 command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
 
 Seems like the kernel version is 2.6.35. which might be vulnerable to something as this version is pretty old.</br>
-Running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
 we can see that the suggester has several suggestions for us.</br>
-An interesting suggestion is dirtycow. Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version. 
+An interesting suggestion is dirtycow.</br></br>
+<img src="../screen1.png" height="100%" width="100%"></br></br>
+Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version.</br>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; gcc -pthread c0w.c -o cow</span></span></span></code></div>
+we can compile the DirtyCow C program (if gcc is installed).</br>
+Running the program with the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./cow</span></span></span></code></div>
+we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It's backed up because DirtyCow modified these files so we can use them to escalate our privileges.</br>
+If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; passwd</span></span></span></code></div>
+command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
+<img src="../screen2.png" height="100%" width="100%"></br>
+<h3 id="kernel-exp">Sudo</h3>
+Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among the Useful References.</br></br>
+~Thank you for reading~
 
 <h3 id="useful-references">Useful references</h3>
 <ul>
@@ -134,6 +146,8 @@ An interesting suggestion is dirtycow. Looking at the exploit-db website that ca
 <li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS">LinPEAS</a></li>
 <li><a href="https://github.com/mzet-/linux-exploit-suggester">Linux Exploit Suggester</a></li>
 <li><a href="https://github.com/firefart/dirtycow">DirtyCow</a></li>
+<li><a href="https://vk9-sec.com/wget-privilege-escalation/">PE with sudo wget</a></li>
+
 </ul>
 
     </div>
