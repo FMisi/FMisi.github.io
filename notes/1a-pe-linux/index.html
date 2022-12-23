@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="../../stiluslapom.css" />
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes - Information Gathering"/>
-<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
+<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET# &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET# -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET# -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET# Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET# -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
 
     <meta property="og:title" content="Notes - Information Gathering" />
-<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
+<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET# &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET# -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET# -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET# Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET# -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
 <meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
@@ -65,82 +65,90 @@
         </div>
       </div>
     </header>
-    <div class="post-content">
+    <div class="post-content"></br>
+	Privilege escalation refers to the act of a user or program gaining access to resources or privileges that are not normally available to them. In the context of a Linux operating system, privilege escalation refers to a user or program gaining access to system-level privileges, such as the ability to install software or access system files.
 	<h1 id="init-linux-pe">Initial Enumeration Commands for Linux PE</h1>
 </code></pre><h3 id="init-linux-pe">System Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; whoami</span>
-</span></span><span style="display:flex;"><span>&gt; id</span>
-</span></span><span style="display:flex;"><span>&gt; w</span>
-</span></span><span style="display:flex;"><span>&gt; groups</span>
-</span></span><span style="display:flex;"><span>&gt; sudo -l</span>
-</span></span><span style="display:flex;"><span>&gt; hostname</span>
-</span></span><span style="display:flex;"><span>&gt; uname -a</span>
-</span></span><span style="display:flex;"><span>&gt; cat /proc/version</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/issue</span>
-</span></span><span style="display:flex;"><span>&gt; lscpu</span>
-</span></span><span style="display:flex;"><span>&gt; ps aux</span>
-</span></span><span style="display:flex;"><span>&gt; ps aux | grep root</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># whoami</span>
+</span></span><span style="display:flex;"><span># id</span>
+</span></span><span style="display:flex;"><span># w</span>
+</span></span><span style="display:flex;"><span># groups</span>
+</span></span><span style="display:flex;"><span># sudo -l</span>
+</span></span><span style="display:flex;"><span># hostname</span>
+</span></span><span style="display:flex;"><span># uname -a</span>
+</span></span><span style="display:flex;"><span># cat /proc/version</span>
+</span></span><span style="display:flex;"><span># cat /etc/issue</span>
+</span></span><span style="display:flex;"><span># lscpu</span>
+</span></span><span style="display:flex;"><span># ps aux</span>
+</span></span><span style="display:flex;"><span># ps aux | grep root</span>
 </code></div>
 
 It is important to note that there are User Enumeration commands among the System Enumeration commands. For example, getting to know the output of sudo -l is almost always more important than getting to know the output of lscpu.
 
 </code></pre><h3 id="init-linux-pe">User Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; cat /etc/passwd</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/passwd | cut -d : -f 1</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/shadow</span>
-</span></span><span style="display:flex;"><span>&gt; cat /etc/group</span>
-</span></span><span style="display:flex;"><span>&gt; history</span>
-</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># cat /etc/passwd</span>
+</span></span><span style="display:flex;"><span># cat /etc/passwd | cut -d : -f 1</span>
+</span></span><span style="display:flex;"><span># cat /etc/shadow</span>
+</span></span><span style="display:flex;"><span># cat /etc/group</span>
+</span></span><span style="display:flex;"><span># history</span>
+</span></span><span style="display:flex;"><span># sudo su -</span>
 </code></div>
 
 </code></pre><h3 id="init-linux-pe">Network Enumeration</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ifconfig</span>
-</span></span><span style="display:flex;"><span>&gt; route</span>
-</span></span><span style="display:flex;"><span>&gt; ip route</span>
-</span></span><span style="display:flex;"><span>&gt; arp -a</span>
-</span></span><span style="display:flex;"><span>&gt; ip neigh</span>
-</span></span><span style="display:flex;"><span>&gt; netstat -ano</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ifconfig</span>
+</span></span><span style="display:flex;"><span># route</span>
+</span></span><span style="display:flex;"><span># ip route</span>
+</span></span><span style="display:flex;"><span># arp -a</span>
+</span></span><span style="display:flex;"><span># ip neigh</span>
+</span></span><span style="display:flex;"><span># netstat -ano</span>
 </code></div>
 
 </code></pre><h3 id="init-linux-pe">Password Hunting</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</span>
-</span></span><span style="display:flex;"><span>&gt; locate password | more</span>
-</span></span><span style="display:flex;"><span>&gt; locate pass | more</span>
-</span></span><span style="display:flex;"><span>&gt; locate passwd | more</span>
-</span></span><span style="display:flex;"><span>&gt; history</span>
-</span></span><span style="display:flex;"><span>&gt; sudo su -</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</span>
+</span></span><span style="display:flex;"><span># locate password | more</span>
+</span></span><span style="display:flex;"><span># locate pass | more</span>
+</span></span><span style="display:flex;"><span># locate passwd | more</span>
+</span></span><span style="display:flex;"><span># history</span>
+</span></span><span style="display:flex;"><span># sudo su -</span>
 </code></div>
 </code>
 In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
 I would like to highlight that there are several other escalation paths. The escalation paths are:</br>
-Kernel Exploits, Passwords and File Permissions, Sudo, SUID, Capabilities, Scheduled Tasks, NFS Root Squashing,
-and Docker.
+<ul>
+<li>Kernel Exploits</li>
+<li>Passwords and File Permissions</li>
+<li>Sudo</li>
+<li>SUID</li>
+<li>Capabilities</li>
+<li>Scheduled Tasks</li>
+<li>NFS Root Squashing</li>
+<li>Docker</li>
+</ul>
 </pre><h3 id="kernel-exp">Kernel Exploits</h3>
 What is a Kernel?</br>
 The Kernel is a computer program that controls everything in the system.</br>
 The Kernel helps interactions between hardware and software components.</br>
 The Kernel is a translator.</br></br>
-Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; uname -a</span></span></span></code></div>
+Let's say we are running the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># uname -a</span></span></span></code></div>
 command as the lower privileged user and we see this: <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>Linux debian 2.6.32-5-amd64 #1 SMP Mon Dec 12 16:34:35 2022 x86_64 GNU/Linux</span></span></span></code></div>
 
 Seems like the kernel version is 2.6.35. which might be vulnerable to something as this version is pretty old.</br>
-Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./linux-exploit-suggester.sh</span></span></span></code></div>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ./linux-exploit-suggester.sh</span></span></span></code></div>
 we can see that the suggester has several suggestions for us.</br>
 An interesting suggestion is dirtycow.</br></br>
 <img src="../screen1.png" height="100%" width="100%"></br></br>
 Looking at the exploit-db website that can be found in the output, we can see that this exploit really is applicable to this kernel version.</br>
-Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; gcc -pthread c0w.c -o cow</span></span></span></code></div>
+Uploading then running <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># gcc -pthread c0w.c -o cow</span></span></span></code></div>
 we can compile the DirtyCow C program (if gcc is installed).</br>
-Running the program with the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; ./cow</span></span></span></code></div>
+Running the program with the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ./cow</span></span></span></code></div>
 we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It's backed up because DirtyCow modified these files so we can use them to escalate our privileges.</br>
-If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; passwd</span></span></span></code></div>
+If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># passwd</span></span></span></code></div>
 command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
 <img src="../screen2.png" height="100%" width="100%"></br>
 <h3 id="sudo-exp">Sudo</h3>
 Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among <s>us</s> the Useful References.</br>
-<h3 id="additional">Additional Tip</h3>
-It is worth researching how to escalate privileges based on the output of the above initial enumeration commands.</br>
-That's how I found the PE with sudo wget for the first time.
+<h3 id="additional">Conclusion</h3>
+It is worth researching how to escalate privileges based on the output of the above initial enumeration commands.
 </br></br>
 ~Thank you for reading~
 <h3 id="useful-references">Useful references</h3>
