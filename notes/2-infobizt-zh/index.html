@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Notes - Information Sec. Indoor Exam Solution // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Notes - Information Gathering"/>
+<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
+
+    <meta property="og:title" content="Notes - Information Gathering" />
+<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan &gt; TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan &gt; nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan &gt; nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats &gt; nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap &gt; nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra &gt; hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p>
+	  <!--a style="font-size: smaller;" href="/magyar/index.html">Switch to Hungarian</a--></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">Notes - Information Security Indoor Exam Solution</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 12, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content"></br>
+	 
+	<h1 id="zh_sol">Exercise</h1>
+	In the exercise we receive the goal of the exercise which is to get the password of the student who has the code ABCDEFG and that the database in which the password is stored is a SQLite database.</br>
+	We learn that the password is four characters long and only contains digits, but we cannot brute force it or guess it as the website logs pretty much everything.</br>
+	We also receive a command which allows us to access a docker.</br>
+	We see an example input:
+	</code>
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span>' UNION SELECT sql FROM sqlite_master;#</span></code></div>
+	After getting access to the docker, we are given a webpage that looks like this:</br></br>
+	<img src="img1.png" alt="Placeholder image">
+	<h1 id="zh_sol">Solution</h1>
+	We register with the student code and we see this:</br></br>
+	<img src="img2.png" alt="Placeholder image"></br></br>
+	After trying a random password with the ABCDEFG code we fail.
+	We know that we are dealing with SQLite so let's try ABCDEFG';#</br>and the same password we entered before. We can also intercept our request with Burp Suite for further analysis but it's not necessary here.</br>
+	It seems like the website is vulnerable to SQL injection because we could log in.</br></br>
+	<img src="img3.png" alt="Placeholder image"></br></br>
+	If we provide the ABCDEG code as the input, we see a normal output, but if we provide the
+	</code>
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span>' UNION SELECT null, null, null, null;#</span></code></div>
+	SQL instruction as the input, we get nothing back. If we provide the
+	</code>
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span>' UNION SELECT sql, null, null, null FROM sqlite_master;#</span></code></div>
+	SQL instruction as the input we get back the <code>CREATE TABLE</code> statements of the database:
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span>#1:</br>#2: CREATE TABLE animals (name TEXT, type TEXT, color TEXT)</br>#3: CREATE TABLE datauserbb (id TEXT PRIMARY KEY, name TEXT, key TEXT)</br>#4: CREATE TABLE users (id TEXT PRIMARY KEY, name TEXT, passphrase TEXT, pwd TEXT)</span></code></div>
+	We learn that the contents of the users table does not contain the password for the user, but the datauserbb table looks interesting too.</br>
+	If we query the contents of the table with the
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span>' UNION SELECT id, name, key, null FROM datauserbb;#</span></code></div>
+	we get the code, the name, and the hash of the password:</br></br>
+	<img src="img4.png" alt="Placeholder image"></br></br>
+	Cracking the hash we get the password and can log in with the credentials.</br></br>
+	Done.
+</br></br>
+~Thank you for reading~
+
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=XqIk2PwP0To" target="_blank">SQL Basics</a></li>
+
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

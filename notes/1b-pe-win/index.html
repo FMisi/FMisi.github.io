@@ -67,7 +67,7 @@
     </header>
     <div class="post-content"></br>
 	Privilege escalation refers to the act of a user or program gaining access to resources or privileges that are not normally available to them. In the context of a Windows operating system, privilege escalation refers to a user or program gaining access to system-level privileges, such as the ability to install software or access system files.
-	<h1 id="init-linux-pe">Initial Enumeration Commands for Windows PE</h1>
+	<h1 id="init-win-pe">Initial Enumeration Commands for Windows PE</h1>
 </code></pre><h3 id="init-linux-pe">System Enumeration</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="bash"><span style="display:flex;"><span><span>&gt; systeminfo</span>
 </span></span><span style="display:flex;"><span>&gt; systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"</span>
@@ -167,9 +167,10 @@ It is worth researching how to escalate privileges based on the output of the ab
 
 <h3 id="useful-references">Useful references</h3>
 <ul>
-<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS">WinPEAS</a></li>
-<li><a href="https://github.com/AonCyberLabs/Windows-Exploit-Suggester">Windows Exploit Suggester</a></li>
-<li><a href="https://www.youtube.com/watch?v=3eROsG_WNpE">All about DLL Hijacking</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS" target="_blank">WinPEAS</a></li>
+<li><a href="https://github.com/AonCyberLabs/Windows-Exploit-Suggester" target="_blank">Windows Exploit Suggester</a></li>
+<li><a href="https://github.com/SecWiki/windows-kernel-exploits/tree/master/MS10-059" target="_blank">MS10-059 Exploit</a></li>
+<li><a href="https://www.youtube.com/watch?v=3eROsG_WNpE" target="_blank">All about DLL Hijacking</a></li>
 
 </ul>
 
