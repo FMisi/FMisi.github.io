@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Notes - Buffer Overflows // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Notes - OSCP Preparation Cheat Sheet"/>
+<meta name="twitter:description" content=""/>
+    <meta property="og:title" content="Notes - OSCP Preparation Cheat Sheet" />
+	<meta name="og:description" content=""/>
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/4-maintain-access/index.html" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-01T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-01T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a professional penetration tester.</p></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <h1 class ="post-title">Notes - Buffer Overflows</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jan 08, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          10 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content"></br>
+	A buffer overflow is a type of software vulnerability that occurs when a program attempts to write more data to a buffer, which is a temporary storage area in a computer's memory, than it can actually hold.</br>This can cause the extra data to overflow into adjacent memory locations, potentially overwriting important data and causing the program to crash or behave in unexpected ways.</br></br>In some cases, this can even allow an attacker to execute malicious code or take control of the affected system.
+
+</br>Buffer overflows can occur in a variety of programs, including web applications, operating systems, and network services.</br>They are often caused by programming errors such as using unsafe functions, not validating input properly, or not checking the size of input data before writing it to a buffer.
+
+</br></br>To prevent buffer overflows, developers can use safe programming practices such as bounds checking, input validation, and secure coding practices like using memory-safe languages.</br>Additionally, system administrators can use intrusion detection systems and firewalls to detect and block malicious traffic that attempts to exploit buffer overflow vulnerabilities.
+      <h3 id="linux-of">Linux Buffer Overflows</h3>
+	  Let's say we have a tgz file that contains a program with a buffer overflow exploit. Let's extract the file.</br>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># tar -xzf linux-bof.tgz</span></span></span></code></pre></div>
+	  The file contains a binary called "ovrflw" and an empty python file called "attack.py".</br>
+	  I gave a tgz file as an example so we can see tar in use here.</br>
+	  If we enter the following command several times we can see that the program is always found on another memory address.</br>This is the ASLR defense.</br>
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ldd ovrflw</span></span></span></code></pre></div>
+	  Turning off ASLR protection:
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># sudo -s</br># echo '0' > /proc/sys/kernel/randomize_va_space</span></span></span></code></pre></div>
+	  Examining the vulnerable program:
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ./ovrflw</br># ./ovrflw aaaa</br># ./ovrflw $(python2 -c "print 'A'*100")</br>(nothing happens)</span></span></span></code></pre></div>
+	  We see segmentation fault if we send in 300 As:
+	  <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ccc"># ./ovrflw $(python2 -c "print 'A'*300")</span></span></span></code></pre></div>
+	</div>
+	</br></br>
+~Thank you for reading~
+<h3 id="useful-references">Useful references</h3>
+<ul>
+</ul>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
