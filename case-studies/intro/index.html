@@ -10,11 +10,11 @@
     <meta name="description" content="" />
     <link rel="stylesheet" href="../../stiluslapom.css" />
     <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Notes - Information Gathering"/>
-<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
+<meta name="twitter:title" content="Case Studies - Introduction to Case Studies Section"/>
+<meta name="twitter:description" content="Case Studies - Introduction to Case Studies Section"/>
 
-    <meta property="og:title" content="Notes - Information Gathering" />
-<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
+    <meta property="og:title" content="Case Studies - Introduction to Case Studies Section" />
+<meta property="og:description" content="Case Studies - Introduction to Case Studies Section" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
 <meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
@@ -69,7 +69,7 @@
     </header>
     <div class="post-content">
 <h1 id="intro">Intro</h1>
-<p>Case study is a new section to study specific cases. In the world of cybersecurity, there are two important concepts: 1) attack vector, 2) attack path. We are only going to lightly cover this topic now.</p>
+<p>Case study is a new section to study specific cases.</br>Think of them like extended notes.</br>In the world of cybersecurity, there are two important concepts: 1) attack vector, 2) attack path. We are only going to lightly cover this topic now.</p>
 <ul>
 <li>An attack vector is a step an attack can take to advance a bit further.</li>
 <li>An attack path is a list of attack vectors that chains up to a successful exploit.

