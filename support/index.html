@@ -1,152 +1,74 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>FMisi&#39;s security.log</title>
+    <title>Contact FMisi // FMisi&#39;s security.log</title>
     <link rel="shortcut icon" href="favicon.ico" />
     <meta charset="utf-8" />
     <meta name="generator" content="Hugo 0.105.0">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="FMisi" />
-    <meta name="description" content="FMisi's security.log" />
-    <link rel="stylesheet" href="stiluslapom.css" type="text/css"/>
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="../stiluslapom.css" />
     <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="FMisi&#39;s security.log"/>
-<meta name="twitter:description" content="FMisi is a pentester."/>
+<meta name="twitter:title" content="FMisi's security.log"/>
+<meta name="twitter:description" content="FMisi is a penetration tester."/>
 
-    <meta property="og:title" content="FMisi&#39;s security.log" />
-<meta property="og:description" content="FMisi is a pentester." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://fmisi.github.io/" />
+    <meta property="og:title" content="FMisi's security.log" />
+<meta property="og:description" content="FMisi is a penetration tester." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fmisi.github.io/notes/0-info-gathering/" /><meta property="article:section" content="notes" />
+<meta property="article:published_time" content="2022-07-13T23:18:05+13:00" />
+<meta property="article:modified_time" content="2022-07-13T23:18:05+13:00" />
 
 
 
   </head>
   <body>
     <header class="app-header">
-      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="avatar.jpg" alt="FMisi" /></a>
+      <a href="https://fmisi.github.io/"><img class="app-header-avatar" src="../../avatar.jpg" alt="FMisi" /></a>
       <span class="app-header-title">FMisi</span>
       <nav class="app-header-menu">
-          <a class="app-header-menu-item" href="/index.html">/root</a>
-             - 
-          
-          <a class="app-header-menu-item" href="/htb/index.html">/htb</a>
-             - 
-          
-		      <a class="app-header-menu-item" href="/case-studies/index.html">/case-studies</a>
-             - 
-		  
-          <a class="app-header-menu-item" href="/notes/index.html">/notes</a>
-             - 
-
-          <a class="app-header-menu-item" href="/contact/index.html">/contact</a>
-             - 
-
-          <a class="app-header-menu-item" href="/support/index.html">/support</a>
+        <a class="app-header-menu-item" href="../index.html">/root</a>
+           - 
+        
+        <a class="app-header-menu-item" href="../htb/index.html">/htb</a>
+           - 
+    
+        <a class="app-header-menu-item" href="../case-studies/index.html">/case-studies</a>
+           - 
+        
+        <a class="app-header-menu-item" href="../notes/index.html">/notes</a>
+        - 
+    
+        <a class="app-header-menu-item" href="../contact/index.html">/contact</a>
+           - 
+    
+        <a class="app-header-menu-item" href="../support/index.html">/support</a>      
       </nav>
       <p>FMisi is a penetration tester.</p></br>
-      <a style="font-size: smaller;" href="/privacy/index.html">Privacy Policy</a>
-	  </br>
+      <a style="font-size: smaller;" href="../../../privacy/index.html">Privacy Policy</a></br>
     </header>
     <main class="app-container">
+
+  <article class="post">
+    <header class="post-header">
+      <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="fmisi" data-description="Support me on Buy me a coffee!" data-message="" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+      <script src="/js/crypto-js.min.js"></script>
+      <script src="/js/dice.js"></script>
+    </header>
+    <div class="post-content">
+<h1 id="text">Support the Writer</h1>
+<p>
+  If you find FMisi's content useful, please buy the writer of this blog some coffee to drink.<br/>
+  The writer of this blog needs coffee to continue publishing the blog posts.
+<br/>
+</p>
+</br></br>
+	<div class="post-footer">
       
-    <main aria-role="main">
-      <header class="homepage-header">
-        <h1>FMisi&#39;s security.log</h1>
-        
-      </header>
-      <div class="homepage-content">
-        
-        <h2 id="what-is-this-site-for">What is this site for?</h2>
-<blockquote>
-<p>FMisi&rsquo;s security.log is a place for accessing security related blogs, notes and CTF tips.</p>
-</blockquote>
-<h2 id="what-does-fmisi-do">What does FMisi do?</h2>
-<p><strong>FMisi provides pentest services</strong></p>
-<blockquote>
-<p>If you are looking for someone to pentest your website, FMisi can help at an affordable rate. This is usually the case for start-up projects that requires an one-off security check.</p>
-</blockquote>
-<p><strong>FMisi conducts security reviews</strong></p>
-<blockquote>
-<p>If you have a software design or security problem at hand, FMisi can provide some consulting service to you, such as threat modelling, secure development cycle, risk assessment &amp; risk management etc.</p>
-</blockquote>
-<p><strong>FMisi creates pentest notes</strong></p>
-<blockquote>
-<p>There are many notes FMisi gathered during the previous pentests engagements/practices, they may become handy from time to time. But it would be more beneficial for you to create your own notes.</p>
-</blockquote>
-<p><strong>FMisi does CTF writeups</strong></p>
-<blockquote>
-<p>FMisi takes CTF challenges and creates writeups often.</p>
-<p>FMisi helps readers with ctf tips, but requests asking for passwords or something similar doesn&rsquo;t work simply because a reader who hasn&rsquo;t tried hard enough will be ignored.</p>
-</blockquote>
-<h2 id="how-to-support-fmisi">How to support FMisi and the blog</h2>
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="fmisi" data-color="#40DCA5" data-emoji="☕"  data-font="Poppins" data-text="Support" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
+    </div>
+  </article>
 
-      </div>
-	  
-	  <article>
-        <h2>Recent Posts</h2>
-        <ul class="posts-list">
-          
-            <li class="posts-list-item">
-              <div class="row">
-                <div class="column">
-                  <span class="posts-list-item-icon">
-                    
-                      
-                    
-                  </span>
-                </div>
-                <div class="column">
-                  <a class="posts-list-item-title" href="/notes/7-linux-bof/index.html">Notes - Linux Buffer Overflows</a>
-                  <span class="posts-list-item-description">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-                    Mar27 , 2023
-                    -
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-                    20 min read
-                  </span>
-                </div>
-              </div>
-            </li>
-			<li class="posts-list-item">
-              <div class="row">
-                <div class="column">
-                  <span class="posts-list-item-icon">
-                    
-                      
-                    
-                  </span>
-                </div>
-                <div class="column">
-                  <a class="posts-list-item-title" href="/notes/6-windows-bof/index.html">Notes - Windows Buffer Overflows</a>
-                  <span class="posts-list-item-description">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
-  <title>calendar</title>
-  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-                    Mar 27, 2023
-                    -
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
-  <title>clock</title>
-  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-</svg>
-                    20 min read
-                  </span>
-                </div>
-              </div>
-            </li>
-        </ul>
-        <a href="/notes/index.html">more...</a>
-      </article>
-
-      </div>
-    </main>
     </main>
   </body>
 </html>
